@@ -1,4 +1,4 @@
-package mimer29or40.foremanfx.gui;
+package mimer29or40.foremanfx.gui.controller;
 
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
@@ -7,7 +7,7 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public abstract class Controller implements Initializable
+public abstract class ControllerBase implements Initializable
 {
     public abstract VBox getRoot();
 

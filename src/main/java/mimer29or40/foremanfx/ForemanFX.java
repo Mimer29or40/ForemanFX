@@ -7,17 +7,25 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import mimer29or40.foremanfx.gui.GuiFiles;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class ForemanFX extends Application
 {
     private Stage factorioDir;
     private Stage modDir;
 
+    private Stage mainStage;
+
     @Override
     public void start(Stage primaryStage) throws Exception
     {
+        this.mainStage = primaryStage;
         try
         {
-            Parent root = FXMLLoader.load(getClass().getResource(GuiFiles.MAIN));
+            FXMLLoader loader = new FXMLLoader();
+            loader.setResources(ResourceBundle.getBundle("lang.bundle", new Locale("en", "US")));
+            Parent root = loader.load(getClass().getResource(GuiFiles.MAIN).openStream());
             primaryStage.setTitle("Foreman FX");
             primaryStage.setScene(new Scene(root, 1170, 440));
             primaryStage.setMinWidth(1170);
@@ -27,10 +35,9 @@ public class ForemanFX extends Application
         catch (Exception e)
         {
             e.printStackTrace();
-            throw e;
+//            throw e;
         }
     }
-
 
     public static void main(String[] args)
     {

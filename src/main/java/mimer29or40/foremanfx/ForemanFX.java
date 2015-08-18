@@ -6,14 +6,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import mimer29or40.foremanfx.gui.GuiFiles;
+import mimer29or40.foremanfx.util.Util;
 
-import java.util.ArrayList;
+import java.io.File;
 
 public class ForemanFX extends Application
 {
-    private Stage factorioDir;
-    private Stage modDir;
-
     private Stage mainStage;
 
     public static Settings settings;
@@ -23,7 +21,23 @@ public class ForemanFX extends Application
     {
         settings = new Settings();
 
+        while (settings.getProp("factorioDir").isEmpty())
+        {
+            File file = Util.directoryChooser("Select Factorio Directory");
+            if (file != null)
+            { settings.setProp("factorioDir", file.getPath()); }
+        }
+
+        if (settings.getProp("modDir").isEmpty())
+        {
+            String modDir = settings.getProp("factorioDir") + "/mods";
+            settings.setProp("modDir", modDir);
+        }
+
+        DataCache.loadAllData(null);
+
         this.mainStage = primaryStage;
+
         try
         {
             FXMLLoader loader = new FXMLLoader();
@@ -39,11 +53,16 @@ public class ForemanFX extends Application
         {
             e.printStackTrace();
         }
+
+
     }
 
     public static void main(String[] args)
     {
         launch(args);
-        DataCache.loadAllData(new ArrayList<>());
+//        List<String> enabledMods = new  ArrayList<String>();
+//        enabledMods.add("base");
+//        enabledMods.add("core");
+//        DataCache.loadAllData(enabledMods);
     }
 }

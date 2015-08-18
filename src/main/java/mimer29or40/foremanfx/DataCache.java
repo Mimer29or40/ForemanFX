@@ -3,6 +3,8 @@ package mimer29or40.foremanfx;
 import mimer29or40.foremanfx.util.JsonHelper;
 import mimer29or40.foremanfx.util.Util;
 import org.json.simple.JSONObject;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,9 +44,17 @@ public class DataCache
     {
         clear();
 
-//        Globals globals = JsePlatform.standardGlobals();
+        Globals globals = JsePlatform.standardGlobals();
 
         findAllMods(enabledMods);
+
+        for (Mod mod : mods)
+        {
+            if (mod.enabled)
+            {
+                addLuaPackagePath(mod.dir);
+            }
+        }
     }
 
     public static void clear()
@@ -62,6 +72,13 @@ public class DataCache
 //        failedPathDirectories.clear();
 //        inserters.clear();
         languages.clear();
+    }
+
+    private static void addLuaPackagePath(String dir)
+    {
+        String command = String.format("package.path = package.path .. ';%s/data.lua'", dir);
+        command = command.replace("\\", "\\\\");
+        System.out.println(command);
     }
 
     private static void findAllMods(List<String> enabledMods)
@@ -136,7 +153,7 @@ public class DataCache
 //        }
         DependencyGraph modGraph = new DependencyGraph(mods);
         modGraph.disableUnsatisfiedMods();
-        mods = modGraph.sortMods();
+//        mods = modGraph.sortMods();
     }
 
     private static void readModInfoFile(File dir)

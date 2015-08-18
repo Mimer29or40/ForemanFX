@@ -134,9 +134,9 @@ public class DataCache
 //                }
 //            }
 //        }
-        DependencyGraph modGraph = new DependencyGraph(Mods);
-        modGraph.DisableUnsatisfiedMods();
-        mods = modGraph.SortMods();
+        DependencyGraph modGraph = new DependencyGraph(mods);
+        modGraph.disableUnsatisfiedMods();
+        mods = modGraph.sortMods();
     }
 
     private static void readModInfoFile(File dir)

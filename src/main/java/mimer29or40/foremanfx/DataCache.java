@@ -30,13 +30,13 @@ public class DataCache
 //    public static Map<String, Module> Modules = new HashMap<String, Module>();
 //    public static Map<String, Inserter> Inserters = new HashMap<String, Inserter>();
 //
-    private static final float defaultRecipeTime = 0.5f;
-//    private static Map<Bitmap, Color> colourCache = new HashMap<Bitmap, Color>();
+    private static final float                  defaultRecipeTime     = 0.5f;
+    //    private static Map<Bitmap, Color> colourCache = new HashMap<Bitmap, Color>();
 //    public static Bitmap UnknownIcon;
 //    public static Map<String, Map<String, String>> LocaleFiles = new HashMap<String, HashMap<String, String>>();
 //
-//    public static Map<String, Exception> failedFiles = new HashMap<string, Exception>();
-//    public static Map<String, Exception> failedPathDirectories = new HashMap<string, Exception>();
+    public static        Map<String, Exception> failedFiles           = new HashMap<String, Exception>();
+    public static        Map<String, Exception> failedPathDirectories = new HashMap<String, Exception>();
 //
 //    public static Map<String, byte[]> zipHashes = new HashMap<string, byte[]>();
 
@@ -52,9 +52,35 @@ public class DataCache
         {
             if (mod.enabled)
             {
-                addLuaPackagePath(mod.dir);
+                addLuaPackagePath(globals, mod.dir);
             }
         }
+        addLuaPackagePath(globals, dataPath + "/core/lualib");
+
+        String dataLoaderFile = dataPath + "/core/lualib/dataloader.lua";
+        try
+        {
+            globals.loadfile(dataLoaderFile).call();
+        }
+        catch (Exception e)
+        {
+            failedFiles.put(dataLoaderFile, e);
+            System.out.println(String.format(
+                    "Error loading dataloader.lua. This file is required to load any values from the prototypes. " +
+                    "Message: '%s'",
+                    e.getMessage()));
+        }
+
+        globals.load("function module(modname,...)\n" +
+                     "\tend\n" +
+                     "\t\n" +
+                     "\trequire \"\"util\"\"\n" +
+                     "\tutil = {}\n" +
+                     "\tutil.table = {}\n" +
+                     "\tutil.table.deepcopy = table.deepcopy\n" +
+                     "\tutil.multiplystripes = multiplystripes\n").call();
+
+
     }
 
     public static void clear()
@@ -68,17 +94,23 @@ public class DataCache
 //        modules.clear();
 //        colourCache.clear();
 //        localeFiles.clear();
-//        failedFiles.clear();
-//        failedPathDirectories.clear();
+        failedFiles.clear();
+        failedPathDirectories.clear();
 //        inserters.clear();
         languages.clear();
     }
 
-    private static void addLuaPackagePath(String dir)
+    private static void addLuaPackagePath(Globals globals, String dir)
     {
-        String command = String.format("package.path = package.path .. ';%s/data.lua'", dir);
-        command = command.replace("\\", "\\\\");
-        System.out.println(command);
+        try
+        {
+            String command = String.format("package.path = package.path .. ';%s/?.lua'", dir);
+            globals.load(command).call();
+        }
+        catch (Exception e)
+        {
+            failedPathDirectories.put(dir, e);
+        }
     }
 
     private static void findAllMods(List<String> enabledMods)
@@ -96,9 +128,7 @@ public class DataCache
             for (File file : modFile.listFiles())
             {
                 if (file.isDirectory())
-                {
-                    readModInfoFile(file);
-                }
+                { readModInfoFile(file); }
 //                else if (file.getName().contains(".zip")); TODO make .zips work
 //                {
 //                    readModInfoZip(file);

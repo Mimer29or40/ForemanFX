@@ -7,9 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import mimer29or40.foremanfx.gui.GuiFiles;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 public class ForemanFX extends Application
 {
     private Stage factorioDir;
@@ -17,14 +14,18 @@ public class ForemanFX extends Application
 
     private Stage mainStage;
 
+    public static Settings settings;
+
     @Override
     public void start(Stage primaryStage) throws Exception
     {
+        settings = new Settings();
+
         this.mainStage = primaryStage;
         try
         {
             FXMLLoader loader = new FXMLLoader();
-            loader.setResources(ResourceBundle.getBundle("lang.bundle", new Locale("en", "US")));
+//            loader.setResources(ResourceBundle.getBundle("lang.bundle", new Locale("en", "US")));
             Parent root = loader.load(getClass().getResource(GuiFiles.MAIN).openStream());
             primaryStage.setTitle("Foreman FX");
             primaryStage.setScene(new Scene(root, 1170, 440));
@@ -35,7 +36,6 @@ public class ForemanFX extends Application
         catch (Exception e)
         {
             e.printStackTrace();
-//            throw e;
         }
     }
 

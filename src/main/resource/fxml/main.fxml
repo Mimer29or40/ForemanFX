@@ -3,24 +3,24 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox fx:id="main" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<VBox fx:id="main" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="mimer29or40.foremanfx.gui.controller.ControllerMain">
     <children>
-        <HBox fx:id="toolbar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-              minWidth="-Infinity" prefHeight="130.0">
+        <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
+              prefHeight="130.0">
             <children>
-                <VBox fx:id="toolbarProduction" maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
-                      minHeight="-Infinity" minWidth="-Infinity" spacing="15.0" style="-fx-border-color: black;">
+                <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                      spacing="15.0" style="-fx-border-color: black;">
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </padding>
                     <children>
                         <Label fx:id="productionHeader" maxHeight="1.7976931348623157E308"
                                maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                               text="%setProduction"/>
+                               text="setProduction"/>
                         <RadioButton fx:id="buttonFixed" maxHeight="1.7976931348623157E308"
                                      maxWidth="1.7976931348623157E308" mnemonicParsing="false" selected="true"
-                                     text="%fixedAmount">
+                                     text="fixedAmount">
                             <toggleGroup>
                                 <ToggleGroup fx:id="production"/>
                             </toggleGroup>
@@ -29,87 +29,88 @@
                               spacing="45.0">
                             <children>
                                 <RadioButton fx:id="buttonRate" maxHeight="1.7976931348623157E308"
-                                             maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%rate"
+                                             maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="rate"
                                              toggleGroup="$production"/>
-                                <ComboBox fx:id="rateSelect" prefWidth="100.0"/>
+                                <ComboBox fx:id="rateSelect" maxHeight="1.7976931348623157E308"
+                                          maxWidth="1.7976931348623157E308" minWidth="100.0"/>
                             </children>
                         </HBox>
                     </children>
                 </VBox>
-                <VBox fx:id="toolbarFlowchart" alignment="CENTER" maxHeight="1.7976931348623157E308"
-                      maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="15.0">
+                <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity"
+                      minWidth="-Infinity" spacing="15.0">
                     <children>
                         <Button fx:id="buttonAutoComplete" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" text="%autoComplete"/>
+                                mnemonicParsing="false" text="autoComplete"/>
                         <Button fx:id="buttonClear" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%clear"/>
+                                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="clear"/>
                         <Button fx:id="buttonEnableDisable" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" text="%enableDisable"/>
+                                mnemonicParsing="false" text="enableDisable"/>
                     </children>
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </padding>
                 </VBox>
-                <VBox fx:id="toolbarSave" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
-                      minHeight="-Infinity" minWidth="-Infinity" spacing="15.0">
+                <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity"
+                      minWidth="-Infinity" spacing="15.0">
                     <children>
                         <Button fx:id="buttonSave" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%save"/>
+                                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="save"/>
                         <Button fx:id="buttonLoad" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%load"/>
+                                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="load"/>
                         <Button fx:id="buttonExport" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" text="%export"/>
+                                mnemonicParsing="false" text="export"/>
                     </children>
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </padding>
                 </VBox>
-                <VBox fx:id="toolbarAssemblers" maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
-                      minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" style="-fx-border-color: black;">
+                <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                      spacing="10.0" style="-fx-border-color: black;">
                     <children>
                         <Label fx:id="assemblerHeader" maxHeight="1.7976931348623157E308"
                                maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                               text="%assemblers"/>
+                               text="assemblers"/>
                         <CheckBox fx:id="checkDisplayAssembler" maxHeight="1.7976931348623157E308"
                                   maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                  mnemonicParsing="false" text="%displayAssemblers"/>
+                                  mnemonicParsing="false" text="displayAssemblers"/>
                         <CheckBox fx:id="checkOneAssembler" maxHeight="1.7976931348623157E308"
                                   maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                  mnemonicParsing="false" text="%oneAssembler"/>
-                        <CheckBox fx:id="checkDisplayMiners" maxHeight="1.7976931348623157E308"
+                                  mnemonicParsing="false" text="oneAssembler"/>
+                        <CheckBox fx:id="checkDisplayMiner" maxHeight="1.7976931348623157E308"
                                   maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                  mnemonicParsing="false" text="%displayMiners"/>
+                                  mnemonicParsing="false" text="displayMiners"/>
                     </children>
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </padding>
                 </VBox>
-                <VBox fx:id="toolbarDirectory" alignment="CENTER" maxHeight="1.7976931348623157E308"
-                      maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="15.0">
+                <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity"
+                      minWidth="-Infinity" spacing="15.0">
                     <children>
                         <Button fx:id="buttonFactorioDir" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" text="%factorioDir"/>
+                                mnemonicParsing="false" text="factorioDir"/>
                         <Button fx:id="buttonModDir" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" text="%modDir"/>
+                                mnemonicParsing="false" text="modDir"/>
                         <Button fx:id="buttonReload" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" text="%reload"/>
+                                mnemonicParsing="false" text="reload"/>
                     </children>
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </padding>
                 </VBox>
-                <VBox fx:id="toolbarLanguage" maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
-                      minHeight="-Infinity" minWidth="150.0" spacing="10.0" style="-fx-border-color: black;">
+                <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="150.0"
+                      spacing="10.0" style="-fx-border-color: black;">
                     <children>
                         <Label fx:id="languageHeader" maxHeight="1.7976931348623157E308"
                                maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                               text="%language"/>
+                               text="language"/>
                         <ComboBox fx:id="languageSelect" maxHeight="1.7976931348623157E308"
                                   maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"/>
                     </children>
@@ -122,18 +123,18 @@
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </padding>
         </HBox>
-        <HBox fx:id="workspace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-              minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" VBox.vgrow="ALWAYS">
+        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+              minWidth="-Infinity" spacing="5.0" VBox.vgrow="ALWAYS">
             <children>
-                <VBox fx:id="itemWindow" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity"
-                      minWidth="-Infinity" prefWidth="285.0">
+                <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                      prefWidth="285.0">
                     <children>
                         <TextField fx:id="filter"/>
                         <ListView fx:id="itemSelecter" maxHeight="1.7976931348623157E308"
                                   maxWidth="1.7976931348623157E308" prefHeight="250.0" VBox.vgrow="ALWAYS"/>
                         <Button fx:id="buttonAddItem" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" text="%addItem"/>
+                                mnemonicParsing="false" text="addItem"/>
                     </children>
                 </VBox>
                 <ScrollPane fx:id="flowchart" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS"/>

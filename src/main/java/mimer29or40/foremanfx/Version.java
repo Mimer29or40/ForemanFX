@@ -18,6 +18,14 @@ public class Version implements Comparable<Version>
         this.build = build;
     }
 
+    public Version(String version)
+    {
+        String[] ver = version.split("\\.");
+        major = Integer.valueOf(ver[0]);
+        minor = Integer.valueOf(ver[1]);
+        build = Integer.valueOf(ver[2]);
+    }
+
     public int getMajor()
     {
         return major;

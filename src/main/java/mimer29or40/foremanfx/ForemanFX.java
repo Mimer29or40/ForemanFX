@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import mimer29or40.foremanfx.gui.GuiFiles;
 
+import java.util.ArrayList;
+
 public class ForemanFX extends Application
 {
     private Stage factorioDir;
@@ -42,5 +44,6 @@ public class ForemanFX extends Application
     public static void main(String[] args)
     {
         launch(args);
+        DataCache.loadAllData(new ArrayList<>());
     }
 }

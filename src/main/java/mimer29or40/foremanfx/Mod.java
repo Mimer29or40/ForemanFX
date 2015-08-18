@@ -1,18 +1,19 @@
 package mimer29or40.foremanfx;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Mod
 {
     public String name  = "";
     public String title = "";
-    public Version parsedVersion;
-    public String dir         = "";
     public String description = "";
     public String author      = "";
-    public List<String>        dependencies;
-    public List<ModDependency> parsedDependencies;
-    public boolean enabled = true;
+    public String dir   = "";
+    public Version parsedVersion;
+    public List<String>        dependencies       = new ArrayList<>();
+    public List<ModDependency> parsedDependencies = new ArrayList<>();
+    public boolean             enabled            = true;
 
     public boolean satisfiesDependency(ModDependency dep)
     {

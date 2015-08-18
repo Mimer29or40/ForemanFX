@@ -1,5 +1,7 @@
 package mimer29or40.foremanfx;
 
+import mimer29or40.foremanfx.util.Util;
+
 public class Language
 {
     private String name;

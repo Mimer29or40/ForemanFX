@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 import mimer29or40.foremanfx.ForemanFX;
 import mimer29or40.foremanfx.Language;
 import mimer29or40.foremanfx.Settings;
-import mimer29or40.foremanfx.Util;
+import mimer29or40.foremanfx.util.Util;
 
 import java.io.File;
 import java.net.URL;

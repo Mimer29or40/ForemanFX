@@ -9,11 +9,11 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,13 +41,13 @@ public class DataCache
 
     private static final float defaultRecipeTime = 0.5f;
     public static BufferedImage unknownIcon;
-    private static Map<BufferedImage, Color>        colourCache = new HashMap<>();
-    public static  Map<String, Map<String, String>> localeFiles = new HashMap<>();
+    //    private static Map<BufferedImage, Color>        colourCache = new HashMap<>();
+    public static Map<String, Map<String, String>> localeFiles = new HashMap<>();
 
     public static Map<String, Exception> failedFiles           = new HashMap<>();
     public static Map<String, Exception> failedPathDirectories = new HashMap<>();
 
-    public static Map<String, byte[]> zipHashes = new HashMap<>();
+//    public static Map<String, byte[]> zipHashes = new HashMap<>();
 
     public static void loadAllData(List<String> enabledMods)
     {
@@ -139,6 +139,8 @@ public class DataCache
         Logger.info("Finished Loading Data...");
 
         reportErrors();
+
+        debugData();
     }
 
     private static void loadAllLanguage()
@@ -171,7 +173,7 @@ public class DataCache
 //        resources.clear();
 //        modules.clear();
 //        inserters.clear();
-        colourCache.clear();
+//        colourCache.clear();
         languages.clear();
         localeFiles.clear();
         failedFiles.clear();
@@ -411,6 +413,7 @@ public class DataCache
                                         }
                                     }
                                 }
+                                reader.close();
                             }
                             catch (Exception e)
                             {
@@ -478,5 +481,72 @@ public class DataCache
             return null;
         }
         return image;
+    }
+
+    private static void debugData()
+    {
+        // This will print out all of the data from the active lists to a log file.
+
+        try
+        {
+            File log = new File("./output.log");
+            if (!log.exists())
+            { log.createNewFile(); }
+
+//            BufferedWriter writer = new BufferedWriter(new FileWriter(log.getAbsoluteFile()));
+            PrintWriter writer = new PrintWriter(log);
+
+            writer.println("dataPath = " + dataPath);
+            writer.println("modPath = " + modPath);
+            writer.println("dataFile = " + dataFile);
+            writer.println("modFile = " + modFile);
+            writer.println("Mods:");
+            for (Mod mod : mods)
+            {
+                writer.println(" Name: " + mod.name);
+                writer.println(" Title: " + mod.title);
+                writer.println(" Description: " + mod.description);
+                writer.println(" Author: " + mod.author);
+                writer.println(" Directory: " + mod.dir);
+                writer.println(" Version: " + mod.parsedVersion.toString());
+                writer.println(" Enabled: " + mod.enabled);
+                writer.println(" Dependencies:");
+                for (ModDependency dep : mod.parsedDependencies)
+                { writer.println("  " + dep.toString()); }
+                writer.println("");
+            }
+            writer.println("Languages:");
+            for (Language lang : languages)
+            {
+                writer.println(" " + lang.getNameFull());
+            }
+            writer.println("Default Recipe Time: " + defaultRecipeTime);
+            writer.println("Locales:");
+            for (String key : localeFiles.keySet())
+            {
+                writer.println(" Ini Section: " + key);
+                for (String key2 : localeFiles.get(key).keySet())
+                {
+                    writer.println("  " + key2 + " = " + localeFiles.get(key).get(key2));
+                }
+            }
+            writer.println("Failed Files:");
+            for (String key : failedFiles.keySet())
+            {
+                writer.println(" File: " + key);
+                writer.println(" Exception: " + failedFiles.get(key).getMessage());
+            }
+            writer.println("Failed Path Directories:");
+            for (String key : failedPathDirectories.keySet())
+            {
+                writer.println(" File: " + key);
+                writer.println(" Exception: " + failedPathDirectories.get(key).getMessage());
+            }
+            writer.close();
+        }
+        catch (Exception e)
+        {
+            Logger.error("Something when wrong...");
+        }
     }
 }

@@ -1,6 +1,7 @@
 package mimer29or40.foremanfx;
 
 import mimer29or40.foremanfx.util.JsonHelper;
+import mimer29or40.foremanfx.util.Logger;
 import mimer29or40.foremanfx.util.Util;
 import org.json.simple.JSONObject;
 import org.luaj.vm2.Globals;
@@ -10,7 +11,9 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +51,7 @@ public class DataCache
 
     public static void loadAllData(List<String> enabledMods)
     {
+        Logger.info("Loading Program Data...");
         clear();
 
         Globals globals = JsePlatform.debugGlobals();
@@ -70,10 +74,10 @@ public class DataCache
         }
         catch (Exception e)
         {
-            failedFiles.put(dataLoaderFile, e);
-            System.out.println(String.format(
+            Logger.error(
                     "Error loading dataloader.lua. This file is required to load any values from the prototypes. " +
-                    "Message: '%s'", e.getMessage()));
+                    "Message: 'e.getMessage()'");
+            failedFiles.put(dataLoaderFile, e);
         }
 
         globals.load("function module(modname,...)\n" +
@@ -85,8 +89,8 @@ public class DataCache
                      "\tutil.table.deepcopy = table.deepcopy\n" +
                      "\tutil.multiplystripes = multiplystripes").call();
 
-        Pattern regex = Pattern.compile(
-                "require *\\(?(\"|')(?<modulename>[^\\.\"']+)(\"|')\\)?"); // TODO see if "." is needed
+        Pattern regex = Pattern.compile("require *\\(?(\"|')(?<module>[^\\.\"']+)(\"|')\\)?");
+        // TODO see if "." is needed
 
         for (String fileName : new String[]{"data.lua", "data-update.lua", "data-final-fixes.lua"})
         {
@@ -114,7 +118,7 @@ public class DataCache
                         }
                         catch (Exception e)
                         {
-                            e.printStackTrace();
+                            Logger.error("Error loading file " + dataString);
                             failedFiles.put(dataFile.getPath(), e);
                         }
                     }
@@ -129,6 +133,31 @@ public class DataCache
         }
 
         loadUnknownIcon();
+
+        loadAllLanguage();
+        loadLocaleFiles();
+
+        Logger.info("Finished Loading Data...");
+    }
+
+    private static void loadAllLanguage()
+    {
+        Logger.info("Loading Languages...");
+        File dirList = new File(dataFile, "core/locale");
+        if (dirList.exists())
+        {
+            for (File dir : dirList.listFiles())
+            {
+                File info = new File(dir, "info.json");
+
+                JSONObject object = JsonHelper.parse(Util.readFile(info));
+
+                Language newLang = new Language(dir.getName(), (String) object.get("language-name"));
+
+                languages.add(newLang);
+            }
+        }
+        Logger.info(languages.size() + " Languages Loaded");
     }
 
     public static void clear()
@@ -140,12 +169,12 @@ public class DataCache
 //        miners.clear();
 //        resources.clear();
 //        modules.clear();
+//        inserters.clear();
         colourCache.clear();
+        languages.clear();
         localeFiles.clear();
         failedFiles.clear();
         failedPathDirectories.clear();
-//        inserters.clear();
-        languages.clear();
     }
 
     private static void addLuaPackagePath(Globals globals, String dir)
@@ -157,12 +186,14 @@ public class DataCache
         }
         catch (Exception e)
         {
+            Logger.error("Could not load lua package \"" + dir + "\"");
             failedPathDirectories.put(dir, e);
         }
     }
 
     private static void findAllMods(List<String> enabledMods)
     {
+        Logger.info("Finding Mods...");
         if (dataFile.exists())
         {
             for (File file : dataFile.listFiles())
@@ -229,9 +260,10 @@ public class DataCache
 //                }
 //            }
 //        }
-        DependencyGraph modGraph = new DependencyGraph(mods);
-        modGraph.disableUnsatisfiedMods();
+//        DependencyGraph modGraph = new DependencyGraph(mods); TODO get this working
+//        modGraph.disableUnsatisfiedMods();
 //        mods = modGraph.sortMods();
+        Logger.info(mods.size() + " Mods Loaded");
     }
 
     private static void readModInfoFile(File dir)
@@ -245,9 +277,9 @@ public class DataCache
 
     private static void readModInfo(List<String> json, File dir)
     {
+        JSONObject object = JsonHelper.parse(json);
         try
         {
-            JSONObject object = JsonHelper.parse(json);
 
             Mod newMod = new Mod();
             newMod.name = (String) object.get("name");
@@ -261,10 +293,11 @@ public class DataCache
             parseModDependencies(newMod);
 
             mods.add(newMod);
+            Logger.info("Added Mod: " + newMod.name);
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Logger.error("There was a problem loading mod: " + object.get("name"));
         }
     }
 
@@ -307,7 +340,7 @@ public class DataCache
                     token++;
 
                     newDependency.version = new Version(split[token]);
-                    token++;
+//                    token++;
                 }
                 mod.parsedDependencies.add(newDependency);
             }
@@ -320,6 +353,62 @@ public class DataCache
 //        System.out.println(itemTable.tojstring());
     }
 
+    private static void loadLocaleFiles()
+    {
+        Logger.info("Loading Mod Locales");
+        String locale = "en";
+        for (Mod mod : mods)
+        {
+            if (mod.enabled)
+            {
+                File localeDir = new File(mod.dir, "/locale/" + locale);
+                if (localeDir.exists())
+                {
+                    for (File file : localeDir.listFiles())
+                    {
+                        if (file.getName().endsWith(".cfg"))
+                        {
+                            Logger.debug(file.getName());
+                            try
+                            {
+                                BufferedReader reader = new BufferedReader(new FileReader(file));
+
+                                String line = null;
+                                String currentIniSection = "none";
+                                while ((line = reader.readLine()) != null)
+                                {
+                                    if (line.startsWith("[") && line.endsWith("]"))
+                                    {
+                                        currentIniSection = line.substring(1, line.length() - 1);
+                                        Logger.debug(currentIniSection);
+                                    }
+                                    else
+                                    {
+                                        if (!localeFiles.containsKey(currentIniSection))
+                                        {
+                                            localeFiles.put(currentIniSection, new HashMap<>());
+                                        }
+                                        String[] split = line.split("=");
+                                        if (split.length == 2)
+                                        {
+                                            localeFiles.get(currentIniSection).put(split[0], split[1]);
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.error("Error with file '" + file.getName() + "'");
+                                failedFiles.put(file.getPath(), e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Logger.info(localeFiles.size() + " Mod Locales Loaded");
+    }
+
     private static void loadUnknownIcon()
     {
         try
@@ -329,7 +418,7 @@ public class DataCache
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Logger.error("Could not load UnknownIcon.png");
         }
     }
 
@@ -349,8 +438,8 @@ public class DataCache
 //
 //            if (!String.IsNullOrEmpty(fullPath))
 //            {
-//                for (int i = 1; i < splitPath.Count(); i++) //Skip the first split section because it's the mod
-// name, not a directory
+//                for (int i = 1; i < splitPath.Count(); i++)
+//                Skip the first split section because it's the mod name, not a directory
 //                {
 //                    fullPath = Path.Combine(fullPath, splitPath[i]);
 //                }
@@ -370,7 +459,7 @@ public class DataCache
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Logger.error("Error loading icon " + fileName);
             return null;
         }
         return image;

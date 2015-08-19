@@ -60,9 +60,5 @@ public class ForemanFX extends Application
     public static void main(String[] args)
     {
         launch(args);
-//        List<String> enabledMods = new  ArrayList<String>();
-//        enabledMods.add("base");
-//        enabledMods.add("core");
-//        DataCache.loadAllData(enabledMods);
     }
 }

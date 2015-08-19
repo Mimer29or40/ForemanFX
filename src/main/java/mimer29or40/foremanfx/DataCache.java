@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("ConstantConditions")
 public class DataCache
 {
     private static String dataPath = ForemanFX.settings.getProp("factorioDir") + "/data";
@@ -253,9 +254,9 @@ public class DataCache
                 mod.enabled = enabledMods.contains(mod.name);
             }
         }
-//        else TODO figure out what this does
+//        else
 //        {
-//            Dictionary<String, String> splitModStrings = new Dictionary<string,string>();
+//            Map<String, String> splitModStrings = new HashMap<>();
 //            foreach (String s in Properties.Settings.Default.EnabledMods)
 //            {
 //                var split = s.Split('|');
@@ -277,9 +278,9 @@ public class DataCache
 //                }
 //            }
 //        }
-//        DependencyGraph modGraph = new DependencyGraph(mods); TODO get this working
-//        modGraph.disableUnsatisfiedMods();
-//        mods = modGraph.sortMods();
+        DependencyGraph modGraph = new DependencyGraph(mods);
+        modGraph.disableUnsatisfiedMods();
+//        mods = modGraph.sortMods(); TODO get this working
         Logger.info(mods.size() + " Mods Loaded");
     }
 
@@ -389,7 +390,7 @@ public class DataCache
                             {
                                 BufferedReader reader = new BufferedReader(new FileReader(file));
 
-                                String line = null;
+                                String line;
                                 String currentIniSection = "none";
                                 while ((line = reader.readLine()) != null)
                                 {
@@ -463,13 +464,6 @@ public class DataCache
         BufferedImage image;
         try
         {
-//            URL imgURL = ForemanFX.class.getResource(fileName);
-//            System.out.println(imgURL.toString());
-//            ImageIcon icon = new ImageIcon(imgURL);
-//            image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-//            Graphics2D g = image.createGraphics();
-//            g.drawImage(icon.getImage(), 0, 0, size, size, null);
-//            g.dispose();
             image = ImageIO.read(file);
         }
         catch (Exception e)

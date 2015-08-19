@@ -22,6 +22,7 @@ public class ControllerMain implements Initializable
     private ResourceBundle bundle;
 
     private Settings settings    = ForemanFX.settings;
+    private Settings userData    = ForemanFX.userData;
     private String   filterValue = "";
 
     @FXML
@@ -35,7 +36,6 @@ public class ControllerMain implements Initializable
     private RadioButton      buttonRate;
     @FXML
     private ComboBox<String> rateSelect;
-    private ObservableList<String> rateSelectList = FXCollections.observableArrayList();
 
     @FXML
     private Button buttonAutoComplete;
@@ -71,7 +71,6 @@ public class ControllerMain implements Initializable
     private Label              languageHeader;
     @FXML
     private ComboBox<Language> languageSelect;
-    private ObservableList<Language> languageSelectList = FXCollections.observableArrayList();
 
     @FXML
     private TextField filter;
@@ -99,19 +98,13 @@ public class ControllerMain implements Initializable
             rateSelect.setDisable(false);
         });
         setupRateSelect();
-        rateSelect.setOnAction((event) -> {
-            settings.setProp("rateType", rateSelect.getSelectionModel().getSelectedItem());
-        });
+        rateSelect.setOnAction((event) -> settings.setProp("rateType",
+                                                           rateSelect.getSelectionModel().getSelectedItem()));
 
-        checkDisplayAssembler.setOnAction((event) -> {
-            settings.setProp("displayAssemblers", checkDisplayAssembler.isSelected());
-        });
-        checkOneAssembler.setOnAction((event) -> {
-            settings.setProp("oneAssembler", checkOneAssembler.isSelected());
-        });
-        checkDisplayMiner.setOnAction((event) -> {
-            settings.setProp("displayMiner", checkDisplayMiner.isSelected());
-        });
+        checkDisplayAssembler.setOnAction((event) -> settings.setProp("displayAssemblers",
+                                                                      checkDisplayAssembler.isSelected()));
+        checkOneAssembler.setOnAction((event) -> settings.setProp("oneAssembler", checkOneAssembler.isSelected()));
+        checkDisplayMiner.setOnAction((event) -> settings.setProp("displayMiner", checkDisplayMiner.isSelected()));
 
         buttonFactorioDir.setOnAction((event) -> {
             File file = Util.directoryChooser("Select Factorio Directory");
@@ -125,13 +118,11 @@ public class ControllerMain implements Initializable
         });
 
         setupLanguageSelect();
-        languageSelect.setOnAction((event) -> {
-            settings.setProp("language", languageSelect.getSelectionModel().getSelectedItem().getName());
-        });
+        languageSelect.setOnAction((event) -> settings.setProp("language",
+                                                               languageSelect.getSelectionModel().getSelectedItem()
+                                                                             .getName()));
 
-        filter.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterValue = newValue;
-        });
+        filter.textProperty().addListener((observable, oldValue, newValue) -> filterValue = newValue);
     }
 
 //    private void loadLanguage(ResourceBundle bundle)
@@ -167,60 +158,59 @@ public class ControllerMain implements Initializable
 
     private void setupRateSelect()
     {
+        ObservableList<String> rateSelectList = FXCollections.observableArrayList();
+
         rateSelectList.add("minute");
         rateSelectList.add("second");
 
         rateSelect.setItems(rateSelectList);
 
         // Define rendering of the list of values in ComboBox drop down.
-        rateSelect.setCellFactory((comboBox) -> {
-            return new ListCell<String>()
+        rateSelect.setCellFactory((comboBox) -> new ListCell<String>()
+        {
+            @Override
+            protected void updateItem(String item, boolean empty)
             {
-                @Override
-                protected void updateItem(String item, boolean empty)
-                {
-                    super.updateItem(item, empty);
+                super.updateItem(item, empty);
 
-                    if (item == null || empty)
-                    {
-                        setText(null);
-                    }
-                    else
-                    {
-                        setText(item);
-                    }
+                if (item == null || empty)
+                {
+                    setText(null);
                 }
-            };
+                else
+                {
+                    setText(item);
+                }
+            }
         });
     }
 
-    // TODO setup language dropdown
     private void setupLanguageSelect()
     {
+        ObservableList<Language> languageSelectList = FXCollections.observableArrayList();
+
         for (String key : DataCache.languages.keySet())
         { languageSelectList.add(DataCache.languages.get(key)); }
 
         languageSelect.setItems(languageSelectList);
 
         // Define rendering of the list of values in ComboBox drop down.
-        languageSelect.setCellFactory((comboBox) -> {
-            return new ListCell<Language>()
+        languageSelect.setCellFactory((comboBox) -> new ListCell<Language>()
+        {
+            @Override
+            protected void updateItem(Language lang, boolean empty)
             {
-                @Override
-                protected void updateItem(Language lang, boolean empty)
-                {
-                    super.updateItem(lang, empty);
+                super.updateItem(lang, empty);
 
-                    if (lang == null || empty)
-                    {
-                        setText(null);
-                    }
-                    else
-                    {
-                        setText(lang.getName());
-                    }
+                if (lang == null || empty)
+                {
+                    setText(null);
                 }
-            };
+                else
+                {
+                    setText(lang.getName());
+                }
+            }
         });
 
         languageSelect.setConverter(new StringConverter<Language>()

@@ -32,11 +32,6 @@ public class Logger
         log(INFO, object);
     }
 
-    public static void infoS(String format, Object... args)
-    {
-        info(String.format(format, args));
-    }
-
     public static void off(Object object)
     {
         log(OFF, object);

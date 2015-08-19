@@ -16,11 +16,6 @@ public class Util
         return chooser.getSelectedFile();
     }
 
-    public static String removeWhitespace(String s)
-    {
-        return s.replaceAll("\\s+", "");
-    }
-
     public static boolean isNullOrWhitespace(String string)
     {
         return string == null || isWhitespace(string);

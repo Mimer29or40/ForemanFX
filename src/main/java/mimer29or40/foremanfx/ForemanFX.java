@@ -15,11 +15,13 @@ public class ForemanFX extends Application
     private Stage mainStage;
 
     public static Settings settings;
+    public static Settings userData;
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        settings = new Settings();
+        settings = new Settings("config.properties");
+        userData = new Settings("userData.properties");
 
         while (settings.getProp("factorioDir").isEmpty())
         {
@@ -33,6 +35,7 @@ public class ForemanFX extends Application
             String modDir = settings.getProp("factorioDir") + "/mods";
             settings.setProp("modDir", modDir);
         }
+        settings.setProp("programDir", new File("").getAbsolutePath());
 
         DataCache.loadAllData(null);
 

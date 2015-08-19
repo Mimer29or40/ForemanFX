@@ -1,24 +1,22 @@
 package mimer29or40.foremanfx;
 
+import mimer29or40.foremanfx.util.Logger;
+
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 
 public class Settings
 {
-    private static final String CONFIG = "/config.properties";
+    private Properties prop;
+    private File       file;
 
-    private static Properties prop;
-    private static File       file;
-
-    public Settings()
+    public Settings(String config)
     {
         prop = new Properties();
-        URL url = ForemanFX.class.getResource(CONFIG);
-        file = new File(url.getFile());
+        file = new File(ForemanFX.class.getResource("/config/" + config).getFile());
         load();
     }
 
@@ -26,13 +24,11 @@ public class Settings
     {
         try
         {
-            InputStream stream = ForemanFX.class.getResourceAsStream(CONFIG);
-            prop.load(stream);
-            stream.close();
+            prop.load(new FileReader(file));
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Logger.error("Error occurred while loading config file: '" + file.getName() + "'");
         }
     }
 
@@ -40,13 +36,11 @@ public class Settings
     {
         try
         {
-            FileWriter writer = new FileWriter(file);
-            prop.store(writer, "Config");
-            writer.close();
+            prop.store(new FileWriter(file), "DO NOT EDIT THIS HERE");
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Logger.error("Error occurred while saving config file: '" + file.getName() + "'");
         }
     }
 

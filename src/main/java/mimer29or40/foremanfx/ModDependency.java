@@ -2,7 +2,6 @@ package mimer29or40.foremanfx;
 
 public class ModDependency
 {
-
     public String  modName     = "";
     public Version version     = new Version(0, 0, 0);
     public boolean optional    = false;

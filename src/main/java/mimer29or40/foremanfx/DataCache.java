@@ -31,23 +31,23 @@ public class DataCache
     public static List<Mod>      mods      = new ArrayList<>();
     public static List<Language> languages = new ArrayList<>();
 
-    //    public static Map<String, Item> Items = new HashMap<String, Item>();
-//    public static Map<String, Recipe> Recipes = new HashMap<String, Recipe>();
-//    public static Map<String, Assembler> Assemblers = new HashMap<String, Assembler>();
-//    public static Map<String, Miner> Miners = new HashMap<String, Miner>();
-//    public static Map<String, Resource> Resources = new HashMap<String, Resource>();
-//    public static Map<String, Module> Modules = new HashMap<String, Module>();
-//    public static Map<String, Inserter> Inserters = new HashMap<String, Inserter>();
+    //    public static Map<String, Item> Items = new HashMap<>();
+//    public static Map<String, Recipe> Recipes = new HashMap<>();
+//    public static Map<String, Assembler> Assemblers = new HashMap<>();
+//    public static Map<String, Miner> Miners = new HashMap<>();
+//    public static Map<String, Resource> Resources = new HashMap<>();
+//    public static Map<String, Module> Modules = new HashMap<>();
+//    public static Map<String, Inserter> Inserters = new HashMap<>();
 
-    private static final float                     defaultRecipeTime = 0.5f;
-    private static       Map<BufferedImage, Color> colourCache       = new HashMap<BufferedImage, Color>();
+    private static final float defaultRecipeTime = 0.5f;
     public static BufferedImage unknownIcon;
-    public static Map<String, Map<String, String>> localeFiles = new HashMap<String, Map<String, String>>();
+    private static Map<BufferedImage, Color>        colourCache = new HashMap<>();
+    public static  Map<String, Map<String, String>> localeFiles = new HashMap<>();
 
-    public static Map<String, Exception> failedFiles           = new HashMap<String, Exception>();
-    public static Map<String, Exception> failedPathDirectories = new HashMap<String, Exception>();
+    public static Map<String, Exception> failedFiles           = new HashMap<>();
+    public static Map<String, Exception> failedPathDirectories = new HashMap<>();
 
-    public static Map<String, byte[]> zipHashes = new HashMap<String, byte[]>();
+    public static Map<String, byte[]> zipHashes = new HashMap<>();
 
     public static void loadAllData(List<String> enabledMods)
     {
@@ -76,7 +76,7 @@ public class DataCache
         {
             Logger.error(
                     "Error loading dataloader.lua. This file is required to load any values from the prototypes. " +
-                    "Message: 'e.getMessage()'");
+                    "Message: '" + e.getMessage() + "'");
             failedFiles.put(dataLoaderFile, e);
         }
 
@@ -118,7 +118,6 @@ public class DataCache
                         }
                         catch (Exception e)
                         {
-                            Logger.error("Error loading file " + dataString);
                             failedFiles.put(dataFile.getPath(), e);
                         }
                     }
@@ -138,6 +137,8 @@ public class DataCache
         loadLocaleFiles();
 
         Logger.info("Finished Loading Data...");
+
+        reportErrors();
     }
 
     private static void loadAllLanguage()
@@ -177,6 +178,24 @@ public class DataCache
         failedPathDirectories.clear();
     }
 
+    private static void reportErrors()
+    {
+        if (!failedPathDirectories.isEmpty())
+        {
+            Logger.error("There were errors setting the lua path variable for the following directories:");
+            for (String dir : failedPathDirectories.keySet())
+            { Logger.error(String.format(" %s (%s)", dir, failedPathDirectories.get(dir).getMessage())); }
+        }
+        if (!failedFiles.isEmpty())
+        {
+            Logger.error("The following files could not be loaded due to errors:");
+            for (String dir : failedFiles.keySet())
+            { Logger.error(String.format(" %s (%s)", dir, failedFiles.get(dir).getMessage())); }
+        }
+        if (failedPathDirectories.isEmpty() && failedFiles.isEmpty())
+        { Logger.info("No errors reported"); }
+    }
+
     private static void addLuaPackagePath(Globals globals, String dir)
     {
         try
@@ -186,7 +205,6 @@ public class DataCache
         }
         catch (Exception e)
         {
-            Logger.error("Could not load lua package \"" + dir + "\"");
             failedPathDirectories.put(dir, e);
         }
     }
@@ -328,13 +346,13 @@ public class DataCache
                     switch (split[token])
                     {
                         case "=":
-                            newDependency.versionType = newDependency.Equal;
+                            newDependency.versionType = 1;// newDependency.Equal;
                             break;
                         case ">":
-                            newDependency.versionType = newDependency.GreaterThan;
+                            newDependency.versionType = 2;// newDependency.GreaterThan;
                             break;
                         case ">=":
-                            newDependency.versionType = newDependency.GreaterThanOrEqual;
+                            newDependency.versionType = 3;// newDependency.GreaterThanOrEqual;
                             break;
                     }
                     token++;
@@ -355,7 +373,7 @@ public class DataCache
 
     private static void loadLocaleFiles()
     {
-        Logger.info("Loading Mod Locales");
+        Logger.info("Loading Locales");
         String locale = "en";
         for (Mod mod : mods)
         {
@@ -368,7 +386,6 @@ public class DataCache
                     {
                         if (file.getName().endsWith(".cfg"))
                         {
-                            Logger.debug(file.getName());
                             try
                             {
                                 BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -380,7 +397,6 @@ public class DataCache
                                     if (line.startsWith("[") && line.endsWith("]"))
                                     {
                                         currentIniSection = line.substring(1, line.length() - 1);
-                                        Logger.debug(currentIniSection);
                                     }
                                     else
                                     {
@@ -398,7 +414,6 @@ public class DataCache
                             }
                             catch (Exception e)
                             {
-                                Logger.error("Error with file '" + file.getName() + "'");
                                 failedFiles.put(file.getPath(), e);
                             }
                         }
@@ -406,7 +421,7 @@ public class DataCache
                 }
             }
         }
-        Logger.info(localeFiles.size() + " Mod Locales Loaded");
+        Logger.info(localeFiles.size() + " Locales Loaded");
     }
 
     private static void loadUnknownIcon()

@@ -17,10 +17,8 @@ public class Settings
     public Settings()
     {
         prop = new Properties();
-
         URL url = ForemanFX.class.getResource(CONFIG);
         file = new File(url.getFile());
-
         load();
     }
 

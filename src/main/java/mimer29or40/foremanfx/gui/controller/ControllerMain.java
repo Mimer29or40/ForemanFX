@@ -90,9 +90,11 @@ public class ControllerMain implements Initializable
 
         buttonFixed.setOnAction((event) -> {
             settings.setProp("productionType", "fixed");
+            rateSelect.setDisable(true);
         });
         buttonRate.setOnAction((event) -> {
             settings.setProp("productionType", "rate");
+            rateSelect.setDisable(false);
         });
         setupRateSelect();
         rateSelect.setOnAction((event) -> {
@@ -143,9 +145,15 @@ public class ControllerMain implements Initializable
     private void loadConfigValues()
     {
         if (settings.getProp("productionType").equals("rate"))
-        { buttonRate.setSelected(true); }
+        {
+            buttonRate.setSelected(true);
+            rateSelect.setDisable(false);
+        }
         else
-        { buttonFixed.setSelected(true); }
+        {
+            buttonFixed.setSelected(true);
+            rateSelect.setDisable(true);
+        }
         rateSelect.setValue(settings.getProp("rateType"));
 
         checkDisplayAssembler.setSelected(Boolean.valueOf(settings.getProp("displayAssemblers")));

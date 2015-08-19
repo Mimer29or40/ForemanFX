@@ -7,6 +7,9 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,23 +35,22 @@ public class DataCache
 //    public static Map<String, Resource> Resources = new HashMap<String, Resource>();
 //    public static Map<String, Module> Modules = new HashMap<String, Module>();
 //    public static Map<String, Inserter> Inserters = new HashMap<String, Inserter>();
-//
-    private static final float                  defaultRecipeTime     = 0.5f;
-    //    private static Map<Bitmap, Color> colourCache = new HashMap<Bitmap, Color>();
-//    public static Bitmap UnknownIcon;
-//    public static Map<String, Map<String, String>> LocaleFiles = new HashMap<String, HashMap<String, String>>();
-//
-    public static        Map<String, Exception> failedFiles           = new HashMap<String, Exception>();
-    public static        Map<String, Exception> failedPathDirectories = new HashMap<String, Exception>();
-//
-//    public static Map<String, byte[]> zipHashes = new HashMap<string, byte[]>();
+
+    private static final float                     defaultRecipeTime = 0.5f;
+    private static       Map<BufferedImage, Color> colourCache       = new HashMap<BufferedImage, Color>();
+    public static BufferedImage unknownIcon;
+    public static Map<String, Map<String, String>> localeFiles = new HashMap<String, Map<String, String>>();
+
+    public static Map<String, Exception> failedFiles           = new HashMap<String, Exception>();
+    public static Map<String, Exception> failedPathDirectories = new HashMap<String, Exception>();
+
+    public static Map<String, byte[]> zipHashes = new HashMap<String, byte[]>();
 
     public static void loadAllData(List<String> enabledMods)
     {
         clear();
 
         Globals globals = JsePlatform.debugGlobals();
-        LuaValue mainChunk = globals.checktable();
 
         findAllMods(enabledMods);
 
@@ -125,6 +127,8 @@ public class DataCache
         {
             interpretItems(globals, type);
         }
+
+        loadUnknownIcon();
     }
 
     public static void clear()
@@ -136,8 +140,8 @@ public class DataCache
 //        miners.clear();
 //        resources.clear();
 //        modules.clear();
-//        colourCache.clear();
-//        localeFiles.clear();
+        colourCache.clear();
+        localeFiles.clear();
         failedFiles.clear();
         failedPathDirectories.clear();
 //        inserters.clear();
@@ -314,5 +318,61 @@ public class DataCache
     {
 //        LuaTable itemTable = (LuaTable) globals.checktable(); TODO make lua work
 //        System.out.println(itemTable.tojstring());
+    }
+
+    private static void loadUnknownIcon()
+    {
+        try
+        {
+            File file = new File(ForemanFX.class.getClassLoader().getResource("UnknownIcon.png").getFile());
+            unknownIcon = ImageIO.read(file);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static BufferedImage loadImage(String fileName)
+    {
+        String fullPath;
+        File file = new File(fileName);
+        if (file.exists())
+        {
+            fullPath = file.getPath();
+        }
+//        else
+//        {
+//            string[] splitPath = fileName.Split('/');
+//            splitPath[0] = splitPath[0].Trim('_');
+//            fullPath = Mods.FirstOrDefault(m => m.Name == splitPath[0]).dir;
+//
+//            if (!String.IsNullOrEmpty(fullPath))
+//            {
+//                for (int i = 1; i < splitPath.Count(); i++) //Skip the first split section because it's the mod
+// name, not a directory
+//                {
+//                    fullPath = Path.Combine(fullPath, splitPath[i]);
+//                }
+//            }
+//        }
+        BufferedImage image;
+        try
+        {
+//            URL imgURL = ForemanFX.class.getResource(fileName);
+//            System.out.println(imgURL.toString());
+//            ImageIcon icon = new ImageIcon(imgURL);
+//            image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+//            Graphics2D g = image.createGraphics();
+//            g.drawImage(icon.getImage(), 0, 0, size, size, null);
+//            g.dispose();
+            image = ImageIO.read(file);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        return image;
     }
 }

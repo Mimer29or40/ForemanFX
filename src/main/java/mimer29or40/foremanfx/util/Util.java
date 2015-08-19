@@ -47,7 +47,7 @@ public class Util
     {
         String string = "";
         for (Object s : list)
-        { string = string + s.toString(); }
+        { string = string + s.toString() + " "; }
         return string;
     }
 

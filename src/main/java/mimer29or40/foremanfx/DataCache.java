@@ -4,6 +4,7 @@ import mimer29or40.foremanfx.util.JsonHelper;
 import mimer29or40.foremanfx.util.Util;
 import org.json.simple.JSONObject;
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.File;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DataCache
 {
@@ -44,7 +47,8 @@ public class DataCache
     {
         clear();
 
-        Globals globals = JsePlatform.standardGlobals();
+        Globals globals = JsePlatform.debugGlobals();
+        LuaValue mainChunk = globals.checktable();
 
         findAllMods(enabledMods);
 
@@ -67,20 +71,60 @@ public class DataCache
             failedFiles.put(dataLoaderFile, e);
             System.out.println(String.format(
                     "Error loading dataloader.lua. This file is required to load any values from the prototypes. " +
-                    "Message: '%s'",
-                    e.getMessage()));
+                    "Message: '%s'", e.getMessage()));
         }
 
         globals.load("function module(modname,...)\n" +
                      "\tend\n" +
                      "\t\n" +
-                     "\trequire \"\"util\"\"\n" +
+                     "\trequire \"util\"\n" +
                      "\tutil = {}\n" +
                      "\tutil.table = {}\n" +
                      "\tutil.table.deepcopy = table.deepcopy\n" +
-                     "\tutil.multiplystripes = multiplystripes\n").call();
+                     "\tutil.multiplystripes = multiplystripes").call();
 
+        Pattern regex = Pattern.compile(
+                "require *\\(?(\"|')(?<modulename>[^\\.\"']+)(\"|')\\)?"); // TODO see if "." is needed
 
+        for (String fileName : new String[]{"data.lua", "data-update.lua", "data-final-fixes.lua"})
+        {
+            for (Mod mod : mods)
+            {
+                if (mod.enabled)
+                {
+                    String dataString = mod.dir + "/" + fileName;
+                    File dataFile = new File(dataString);
+
+                    if (dataFile.exists())
+                    {
+                        try
+                        {
+                            String fileContents = Util.listToString(Util.readFile(dataFile));
+                            Matcher matcher = regex.matcher(fileContents);
+
+                            while (matcher.find())
+                            {
+                                String s = matcher.group();
+                                globals.load(s).call();
+                            }
+                            LuaValue chunk = globals.loadfile(dataString);
+                            chunk.call();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            failedFiles.put(dataFile.getPath(), e);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (String type : new String[]{"item", "fluid", "capsule", "module", "ammo", "gun", "armor",
+                                        "blueprint", "deconstruction-item", "mining-tool", "repair-tool", "tool"})
+        {
+            interpretItems(globals, type);
+        }
     }
 
     public static void clear()
@@ -264,5 +308,11 @@ public class DataCache
                 mod.parsedDependencies.add(newDependency);
             }
         }
+    }
+
+    private static void interpretItems(Globals globals, String typeName)
+    {
+//        LuaTable itemTable = (LuaTable) globals.checktable(); TODO make lua work
+//        System.out.println(itemTable.tojstring());
     }
 }

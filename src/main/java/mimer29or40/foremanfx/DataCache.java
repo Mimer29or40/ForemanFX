@@ -14,10 +14,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,8 +25,8 @@ public class DataCache
     private static File   dataFile = new File(dataPath);
     private static File   modFile  = new File(modPath);
 
-    public static List<Mod>      mods      = new ArrayList<>();
-    public static List<Language> languages = new ArrayList<>();
+    public static List<Mod>             mods      = new ArrayList<>();
+    public static Map<String, Language> languages = new TreeMap<>();
 
     //    public static Map<String, Item> Items = new HashMap<>();
 //    public static Map<String, Recipe> Recipes = new HashMap<>();
@@ -157,7 +154,7 @@ public class DataCache
 
                 Language newLang = new Language(dir.getName(), (String) object.get("language-name"));
 
-                languages.add(newLang);
+                languages.put(newLang.getName(), newLang);
             }
         }
         Logger.info(languages.size() + " Languages Loaded");
@@ -489,7 +486,7 @@ public class DataCache
 
         try
         {
-            File log = new File("./output.log");
+            File log = new File("./data.log");
             if (!log.exists())
             { log.createNewFile(); }
 
@@ -516,9 +513,9 @@ public class DataCache
                 writer.println("");
             }
             writer.println("Languages:");
-            for (Language lang : languages)
+            for (String key : languages.keySet())
             {
-                writer.println(" " + lang.getNameFull());
+                writer.println(" Name: " + key + "    " + languages.get(key).toString());
             }
             writer.println("Default Recipe Time: " + defaultRecipeTime);
             writer.println("Locales:");

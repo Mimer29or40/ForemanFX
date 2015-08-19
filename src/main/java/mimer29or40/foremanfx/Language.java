@@ -13,11 +13,6 @@ public class Language
         this.localName = localName;
     }
 
-    public Language(String name)
-    {
-        this(name, "");
-    }
-
     public String getName()
     {
         if (!Util.isNullOrWhitespace(localName))
@@ -25,8 +20,8 @@ public class Language
         return name;
     }
 
-    public String getNameFull()
+    public String toString()
     {
-        return name + "," + localName;
+        return name + "_" + localName;
     }
 }

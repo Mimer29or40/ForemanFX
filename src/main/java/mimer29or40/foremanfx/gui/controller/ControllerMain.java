@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
+import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.ForemanFX;
 import mimer29or40.foremanfx.Language;
 import mimer29or40.foremanfx.Settings;
@@ -122,10 +124,10 @@ public class ControllerMain implements Initializable
             { settings.setProp("modDir", file.getPath()); }
         });
 
-        // TODO setup language dropdown
-//        setupLanguageSelect();
-//        languageSelect.setOnAction((event) -> {
-//            settings.setProp("language", languageSelect.getSelectionModel().getSelectedItem().getNameFull()); });
+        setupLanguageSelect();
+        languageSelect.setOnAction((event) -> {
+            settings.setProp("language", languageSelect.getSelectionModel().getSelectedItem().getName());
+        });
 
         filter.textProperty().addListener((observable, oldValue, newValue) -> {
             filterValue = newValue;
@@ -160,9 +162,7 @@ public class ControllerMain implements Initializable
         checkOneAssembler.setSelected(Boolean.valueOf(settings.getProp("oneAssembler")));
         checkDisplayMiner.setSelected(Boolean.valueOf(settings.getProp("displayMiner")));
 
-        // TODO setup language dropdown
-//        String lang[] = settings.getProp("language").split(",");
-//        languageSelect.setValue();
+        languageSelect.setValue(DataCache.languages.get(settings.getProp("language")));
     }
 
     private void setupRateSelect()
@@ -195,47 +195,55 @@ public class ControllerMain implements Initializable
     }
 
     // TODO setup language dropdown
-//    private void setupLanguageSelect()
-//    {
-//        languageSelectList.add(new Language("en", "English"));
-//
-//        languageSelect.setItems(languageSelectList);
-//
-//        // Define rendering of the list of values in ComboBox drop down.
-//        languageSelect.setCellFactory((comboBox) -> {
-//            return new ListCell<Language>()
-//            {
-//                @Override
-//                protected void updateItem(Language lang, boolean empty)
-//                {
-//                    super.updateItem(lang, empty);
-//
-//                    if (lang == null || empty)
-//                    {
-//                        setText(null);
-//                    }
-//                    else
-//                    {
-//                        setText(lang.getName());
-//                    }
-//                }
-//            };
-//        });
-//
-//        languageSelect.setConverter(new StringConverter<Language>() {
-//            @Override
-//            public String toString(Language lang) {
-//                if (lang == null) {
-//                    return null;
-//                } else {
-//                    return lang.getName();
-//                }
-//            }
-//
-//            @Override
-//            public Language fromString(String personString) {
-//                return null; // No conversion fromString needed.
-//            }
-//        });
-//    }
+    private void setupLanguageSelect()
+    {
+        for (String key : DataCache.languages.keySet())
+        { languageSelectList.add(DataCache.languages.get(key)); }
+
+        languageSelect.setItems(languageSelectList);
+
+        // Define rendering of the list of values in ComboBox drop down.
+        languageSelect.setCellFactory((comboBox) -> {
+            return new ListCell<Language>()
+            {
+                @Override
+                protected void updateItem(Language lang, boolean empty)
+                {
+                    super.updateItem(lang, empty);
+
+                    if (lang == null || empty)
+                    {
+                        setText(null);
+                    }
+                    else
+                    {
+                        setText(lang.getName());
+                    }
+                }
+            };
+        });
+
+        languageSelect.setConverter(new StringConverter<Language>()
+        {
+            @Override
+            public String toString(Language lang)
+            {
+                if (lang == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return lang.getName();
+                }
+            }
+
+            @Override
+            public Language fromString(String langString)
+            {
+                return null;
+//                return new Language(langString);
+            }
+        });
+    }
 }

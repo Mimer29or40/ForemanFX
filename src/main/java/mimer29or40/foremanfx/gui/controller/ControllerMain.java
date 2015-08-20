@@ -63,7 +63,7 @@ public class ControllerMain implements Initializable
     @FXML
     private Button buttonFactorioDir;
     @FXML
-    private Button buttonModDir;
+    private Button buttonOpenDir;
     @FXML
     private Button buttonReload;
 
@@ -111,11 +111,19 @@ public class ControllerMain implements Initializable
             if (file != null)
             { settings.setProp("factorioDir", file.getPath()); }
         });
-        buttonModDir.setOnAction((event) -> {
-            File file = Util.directoryChooser("Select Mod Directory");
-            if (file != null)
-            { settings.setProp("modDir", file.getPath()); }
-        });
+//        buttonOpenDir.setOnAction((event) -> { TODO get this to work
+//            try
+//            {
+//                Desktop.getDesktop().open(new File(settings.getProp("programDir")));
+//            }
+//            catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            }
+//            File file = Util.directoryChooser("Select Mod Directory");
+//            if (file != null)
+//            { settings.setProp("modDir", file.getPath()); }
+//        });
 
         setupLanguageSelect();
         languageSelect.setOnAction((event) -> settings.setProp("language",

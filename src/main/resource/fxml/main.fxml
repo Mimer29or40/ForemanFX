@@ -94,9 +94,9 @@
                         <Button fx:id="buttonFactorioDir" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
                                 mnemonicParsing="false" text="factorioDir"/>
-                        <Button fx:id="buttonModDir" maxHeight="1.7976931348623157E308"
+                        <Button fx:id="buttonOpenDir" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-                                mnemonicParsing="false" text="modDir"/>
+                                mnemonicParsing="false" text="openDir"/>
                         <Button fx:id="buttonReload" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
                                 mnemonicParsing="false" text="reload"/>

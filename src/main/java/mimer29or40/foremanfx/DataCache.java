@@ -72,9 +72,8 @@ public class DataCache
         }
         catch (Exception e)
         {
-            Logger.error(
-                    "Error loading dataloader.lua. This file is required to load any values from the prototypes. " +
-                    "Message: '" + e.getMessage() + "'");
+            Logger.error("Error loading dataloader.lua. This is required to load any values from the prototypes. '" +
+                         e.getMessage() + "'");
             failedFiles.put(dataLoaderFile, e);
         }
 
@@ -315,7 +314,7 @@ public class DataCache
         }
         catch (Exception e)
         {
-            Logger.error("There was a problem loading mod: " + object.get("name"));
+            Logger.error("There was a problem loading mod: " + object.get("name") + " " + e.getMessage());
         }
     }
 
@@ -434,7 +433,7 @@ public class DataCache
         }
         catch (Exception e)
         {
-            Logger.error("Could not load UnknownIcon.png");
+            Logger.error("Could not load UnknownIcon.png " + e.getMessage());
         }
     }
 
@@ -468,7 +467,7 @@ public class DataCache
         }
         catch (Exception e)
         {
-            Logger.error("Error loading icon " + fileName);
+            Logger.error("Error loading icon " + fileName + " " + e.getMessage());
             return null;
         }
         return image;
@@ -535,7 +534,7 @@ public class DataCache
         }
         catch (Exception e)
         {
-            Logger.error("Something when wrong...");
+            Logger.error("Something when wrong... " + e.getMessage());
         }
     }
 }

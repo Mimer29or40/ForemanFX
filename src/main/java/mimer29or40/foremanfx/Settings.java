@@ -17,7 +17,6 @@ public class Settings
         prop = new Properties();
         file = new File(".", name);
         createFileIfNeeded();
-        Logger.debug(file.getAbsolutePath());
         load();
     }
 
@@ -29,7 +28,7 @@ public class Settings
         }
         catch (Exception e)
         {
-            Logger.error("Error occurred while loading config: " + name);
+            Logger.error("Error occurred while loading config: " + name + " " + e.getMessage());
         }
     }
 
@@ -41,7 +40,7 @@ public class Settings
         }
         catch (IOException e)
         {
-            Logger.error("Error occurred while saving config: " + name);
+            Logger.error("Error occurred while saving config: " + name + " " + e.getMessage());
         }
     }
 

@@ -477,14 +477,12 @@ public class DataCache
     private static void debugData()
     {
         // This will print out all of the data from the active lists to a log file.
-
         try
         {
             File log = new File("./data.log");
             if (!log.exists())
             { log.createNewFile(); }
 
-//            BufferedWriter writer = new BufferedWriter(new FileWriter(log.getAbsoluteFile()));
             PrintWriter writer = new PrintWriter(log);
 
             writer.println("dataPath = " + dataPath);
@@ -494,44 +492,44 @@ public class DataCache
             writer.println("Mods:");
             for (Mod mod : mods)
             {
-                writer.println(" Name: " + mod.name);
-                writer.println(" Title: " + mod.title);
-                writer.println(" Description: " + mod.description);
-                writer.println(" Author: " + mod.author);
-                writer.println(" Directory: " + mod.dir);
-                writer.println(" Version: " + mod.parsedVersion.toString());
-                writer.println(" Enabled: " + mod.enabled);
-                writer.println(" Dependencies:");
+                writer.println("  Name: " + mod.name);
+                writer.println("  Title: " + mod.title);
+                writer.println("  Description: " + mod.description);
+                writer.println("  Author: " + mod.author);
+                writer.println("  Directory: " + mod.dir);
+                writer.println("  Version: " + mod.parsedVersion.toString());
+                writer.println("  Enabled: " + mod.enabled);
+                writer.println("  Dependencies:");
                 for (ModDependency dep : mod.parsedDependencies)
-                { writer.println("  " + dep.toString()); }
+                { writer.println("    " + dep.toString()); }
                 writer.println("");
             }
             writer.println("Languages:");
             for (String key : languages.keySet())
             {
-                writer.println(" Name: " + key + "    " + languages.get(key).toString());
+                writer.println("  Name: " + key + "  " + languages.get(key).toString());
             }
             writer.println("Default Recipe Time: " + defaultRecipeTime);
             writer.println("Locales:");
             for (String key : localeFiles.keySet())
             {
-                writer.println(" Ini Section: " + key);
+                writer.println("  Ini Section: " + key);
                 for (String key2 : localeFiles.get(key).keySet())
                 {
-                    writer.println("  " + key2 + " = " + localeFiles.get(key).get(key2));
+                    writer.println("    " + key2 + " = " + localeFiles.get(key).get(key2));
                 }
             }
             writer.println("Failed Files:");
             for (String key : failedFiles.keySet())
             {
-                writer.println(" File: " + key);
-                writer.println(" Exception: " + failedFiles.get(key).getMessage());
+                writer.println("  File: " + key);
+                writer.println("  Exception: " + failedFiles.get(key).getMessage());
             }
             writer.println("Failed Path Directories:");
             for (String key : failedPathDirectories.keySet())
             {
-                writer.println(" File: " + key);
-                writer.println(" Exception: " + failedPathDirectories.get(key).getMessage());
+                writer.println("  File: " + key);
+                writer.println("  Exception: " + failedPathDirectories.get(key).getMessage());
             }
             writer.close();
         }

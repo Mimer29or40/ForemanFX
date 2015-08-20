@@ -2,21 +2,22 @@ package mimer29or40.foremanfx;
 
 import mimer29or40.foremanfx.util.Logger;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 public class Settings
 {
     private Properties prop;
     private File       file;
+    private String name;
 
-    public Settings(String config)
+    public Settings(String name)
     {
+        this.name = name;
         prop = new Properties();
-        file = new File(ForemanFX.class.getResource("/config/" + config).getFile());
+        file = new File(".", name);
+        createFileIfNeeded();
+        Logger.debug(file.getAbsolutePath());
         load();
     }
 
@@ -28,7 +29,7 @@ public class Settings
         }
         catch (Exception e)
         {
-            Logger.error("Error occurred while loading config file: '" + file.getName() + "'");
+            Logger.error("Error occurred while loading config: " + name);
         }
     }
 
@@ -40,7 +41,7 @@ public class Settings
         }
         catch (IOException e)
         {
-            Logger.error("Error occurred while saving config file: '" + file.getName() + "'");
+            Logger.error("Error occurred while saving config: " + name);
         }
     }
 
@@ -53,5 +54,31 @@ public class Settings
     public String getProp(String key)
     {
         return prop.getProperty(key);
+    }
+
+    private void createFileIfNeeded()
+    {
+        try
+        {
+            if (!file.exists())
+            {
+                file.createNewFile();
+
+                InputStream input = ForemanFX.class.getResourceAsStream("/config/" + name);
+                OutputStream output = new FileOutputStream(file);
+
+                byte[] buf = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = input.read(buf)) > 0)
+                { output.write(buf, 0, bytesRead); }
+
+                input.close();
+                output.close();
+            }
+        }
+        catch (IOException e)
+        {
+            Logger.error("Could not create config: " + name + " " + e.getMessage());
+        }
     }
 }

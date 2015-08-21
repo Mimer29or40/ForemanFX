@@ -124,6 +124,7 @@ public class ControllerMain implements Initializable
 //            if (file != null)
 //            { settings.setProp("modDir", file.getPath()); }
 //        });
+        buttonReload.setOnAction((event) -> DataCache.loadAllData(null));
 
         setupLanguageSelect();
         languageSelect.setOnAction((event) -> settings.setProp("language",

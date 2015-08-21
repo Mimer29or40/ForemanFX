@@ -2,9 +2,11 @@ package mimer29or40.foremanfx;
 
 import mimer29or40.foremanfx.util.JsonHelper;
 import mimer29or40.foremanfx.util.Logger;
+import mimer29or40.foremanfx.util.LuaHelper;
 import mimer29or40.foremanfx.util.Util;
 import org.json.simple.JSONObject;
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -29,13 +31,13 @@ public class DataCache
     public static List<Mod>             mods      = new ArrayList<>();
     public static Map<String, Language> languages = new TreeMap<>();
 
-    //    public static Map<String, Item> Items = new HashMap<>();
-//    public static Map<String, Recipe> Recipes = new HashMap<>();
-//    public static Map<String, Assembler> Assemblers = new HashMap<>();
-//    public static Map<String, Miner> Miners = new HashMap<>();
-//    public static Map<String, Resource> Resources = new HashMap<>();
-//    public static Map<String, Module> Modules = new HashMap<>();
-//    public static Map<String, Inserter> Inserters = new HashMap<>();
+    public static Map<String, Item>   items   = new HashMap<>();
+    public static Map<String, Recipe> recipes = new HashMap<>();
+//    public static Map<String, Assembler> assemblers = new HashMap<>();
+//    public static Map<String, Miner> miners = new HashMap<>();
+//    public static Map<String, Resource> resources = new HashMap<>();
+//    public static Map<String, Module> modules = new HashMap<>();
+//    public static Map<String, Inserter> inserters = new HashMap<>();
 
     private static final float defaultRecipeTime = 0.5f;
     public static BufferedImage unknownIcon;
@@ -86,7 +88,7 @@ public class DataCache
                      "\tutil.table.deepcopy = table.deepcopy\n" +
                      "\tutil.multiplystripes = multiplystripes").call();
 
-        Pattern regex = Pattern.compile("require *\\(?(\"|')(?<module>[^\\.\"']+)(\"|')\\)?");
+        Pattern regex = Pattern.compile("require *\\(?(\"|')(?<module>[^\"']+)(\"|')\\)?");
         // TODO see if "." is needed
 
         for (String fileName : new String[]{"data.lua", "data-update.lua", "data-final-fixes.lua"})
@@ -122,10 +124,24 @@ public class DataCache
             }
         }
 
+        LuaTable dataTable = LuaHelper.getTable(globals, "data");
+        LuaTable rawTable = LuaHelper.getTable(dataTable, "raw");
+
+        Logger.info("Loading Items...");
         for (String type : new String[]{"item", "fluid", "capsule", "module", "ammo", "gun", "armor",
                                         "blueprint", "deconstruction-item", "mining-tool", "repair-tool", "tool"})
         {
-            interpretItems(globals, type);
+            interpretItems(rawTable, type);
+        }
+
+        Logger.info("Loading Recipes...");
+        LuaTable recipeTable = LuaHelper.getTable(rawTable, "recipe");
+        if (recipeTable != null)
+        {
+            for (LuaValue key : recipeTable.keys())
+            {
+                interpretLuaRecipe(key.tojstring(), LuaHelper.getTable(recipeTable, key));
+            }
         }
 
         loadUnknownIcon();
@@ -163,8 +179,8 @@ public class DataCache
     public static void clear()
     {
         mods.clear();
-//        items.clear();
-//        recipes.clear();
+        items.clear();
+        recipes.clear();
 //        assemblers.clear();
 //        miners.clear();
 //        resources.clear();
@@ -176,6 +192,7 @@ public class DataCache
         failedFiles.clear();
         failedPathDirectories.clear();
     }
+
 
     private static void reportErrors()
     {
@@ -364,10 +381,22 @@ public class DataCache
         }
     }
 
-    private static void interpretItems(Globals globals, String typeName)
+    private static void interpretItems(LuaTable rawTable, String typeName)
     {
-//        LuaTable itemTable = (LuaTable) globals.checktable(); TODO make lua work
-//        System.out.println(itemTable.tojstring());
+        for (LuaValue key : rawTable.keys())
+        {
+            if (key.tojstring().equals(typeName))
+            {
+                LuaTable itemTables = LuaHelper.getTable(rawTable, key);
+
+                for (LuaValue key2 : itemTables.keys())
+                {
+                    LuaTable item = LuaHelper.getTable(itemTables, key2);
+
+                    interpretLuaItem(key2.tojstring(), item);
+                }
+            }
+        }
     }
 
     private static void loadLocaleFiles()
@@ -401,7 +430,7 @@ public class DataCache
                                     {
                                         if (!localeFiles.containsKey(currentIniSection))
                                         {
-                                            localeFiles.put(currentIniSection, new HashMap<>());
+                                            localeFiles.put(currentIniSection, new HashMap<String, String>());
                                         }
                                         String[] split = line.split("=");
                                         if (split.length == 2)
@@ -439,38 +468,146 @@ public class DataCache
 
     private static BufferedImage loadImage(String fileName)
     {
-        String fullPath;
+        String fullPath = "";
         File file = new File(fileName);
-        if (file.exists())
+        if (!file.exists())
         {
-            fullPath = file.getPath();
+            String[] splitPath = fileName.split("/");
+            splitPath[0] = splitPath[0].replace("_", "");
+
+            for (Mod mod : mods)
+            {
+                if (mod.name.equals(splitPath[0]))
+                {
+                    fullPath = mod.dir;
+                }
+            }
+
+            if (!Util.isNullOrWhitespace(fullPath))
+            {
+                for (int i = 1; i < splitPath.length;
+                     i++) // Skip the first split section because it's the mod name, not a directory
+                {
+                    fullPath = fullPath + "/" + splitPath[i];
+                }
+            }
+            file = new File(fullPath);
         }
-//        else
-//        {
-//            string[] splitPath = fileName.Split('/');
-//            splitPath[0] = splitPath[0].Trim('_');
-//            fullPath = Mods.FirstOrDefault(m => m.Name == splitPath[0]).dir;
-//
-//            if (!String.IsNullOrEmpty(fullPath))
-//            {
-//                for (int i = 1; i < splitPath.Count(); i++)
-//                Skip the first split section because it's the mod name, not a directory
-//                {
-//                    fullPath = Path.Combine(fullPath, splitPath[i]);
-//                }
-//            }
-//        }
-        BufferedImage image;
         try
         {
-            image = ImageIO.read(file);
+            return ImageIO.read(file);
         }
         catch (Exception e)
         {
             Logger.error("Error loading icon " + fileName + " " + e.getMessage());
             return null;
         }
-        return image;
+    }
+
+    private static void interpretLuaItem(String name, LuaTable item)
+    {
+        String iconString = LuaHelper.getString(item, "icon", true);
+        Item newItem = new Item(name, loadImage(iconString));
+
+        if (!items.containsKey(name))
+        { items.put(name, newItem); }
+    }
+
+    private static Item findOrCreateUnknownItem(String itemName)
+    {
+        Item newItem;
+        if (!items.containsKey(itemName))
+        {
+            items.put(itemName, newItem = new Item(itemName));
+        }
+        else
+        {
+            newItem = items.get(itemName);
+        }
+        return newItem;
+    }
+
+    private static void interpretLuaRecipe(String name, LuaTable recipe)
+    {
+        try
+        {
+            float time = LuaHelper.getFloat(recipe, "energy_required", true, 0.5F);
+            Map<Item, Float> ingredients = extractIngredientsFromLuaRecipe(recipe);
+            Logger.debug(name);
+            Map<Item, Float> results = extractResultsFromLuaRecipe(recipe); // TODO this seems to not have some recipes
+
+            Recipe newRecipe = new Recipe(name, time == 0.0F ? defaultRecipeTime : time, ingredients, results);
+
+
+            newRecipe.category = LuaHelper.getString(recipe, "category", true, "crafting");
+
+            String iconFile = LuaHelper.getString(recipe, "icon", true);
+            if (iconFile != null)
+            { newRecipe.setIcon(loadImage(iconFile)); }
+            for (Item result : results.keySet())
+            { result.addRecipe(newRecipe); }
+            recipes.put(newRecipe.getName(), newRecipe);
+        }
+        catch (MissingPrototypeValueException e)
+        {
+            Logger.error(String.format(
+                    "Error reading value '%s' from recipe prototype '%s'. Returned error message: '%s'",
+                    e.key, name, e.getMessage()));
+        }
+    }
+
+    private static Map<Item, Float> extractResultsFromLuaRecipe(LuaTable recipe)
+    {
+        Map<Item, Float> results = new HashMap<>();
+        if (recipe.get(LuaValue.valueOf("result")) != LuaValue.NIL)
+        {
+            String resultName = LuaHelper.getString(recipe, "result", false);
+            float resultCount = LuaHelper.getFloat(recipe, "result_count", true);
+            if (resultCount == 0F)
+            { resultCount = 1F; }
+            results.put(findOrCreateUnknownItem(resultName), resultCount);
+            Logger.debug("  " + resultName + " " + resultCount);
+        }
+        else if (recipe.get(LuaValue.valueOf("results")) != LuaValue.NIL)
+        {
+            LuaTable resultsTable = (LuaTable) recipe.get(LuaValue.valueOf("results"));
+            for (LuaValue key : ((LuaTable) resultsTable.get(1)).keys())
+            {
+                Logger.debug("  " + key + " " + resultsTable.get(key));
+            }
+        }
+
+//        return null;
+        return results;
+    }
+
+    private static Map<Item, Float> extractIngredientsFromLuaRecipe(LuaTable recipe)
+    {
+        Map<Item, Float> ingredients = new HashMap<>();
+        LuaTable ingredientsTable = LuaHelper.getTable(recipe, "ingredients");
+        for (LuaValue key : ingredientsTable.keys())
+        {
+            LuaTable ingredientTable = LuaHelper.getTable(ingredientsTable, key);
+            String name;
+            float amount;
+            name = LuaHelper.getString(ingredientTable, "name") == null ?
+                   LuaHelper.getString(ingredientTable, "name") :
+                   LuaHelper.getString(ingredientTable, 1);
+            amount = LuaHelper.getValue(ingredientTable, "amount") != null ?
+                     LuaHelper.getValue(ingredientTable, "amount").tofloat() :
+                     ingredientTable.get(2).tofloat();
+            Item ingredient = findOrCreateUnknownItem(name);
+            if (!ingredients.containsKey(ingredient))
+            {
+                ingredients.put(ingredient, amount);
+            }
+            else
+            {
+                amount += ingredients.get(ingredient);
+                ingredients.put(ingredient, amount);
+            }
+        }
+        return ingredients;
     }
 
     private static void debugData()

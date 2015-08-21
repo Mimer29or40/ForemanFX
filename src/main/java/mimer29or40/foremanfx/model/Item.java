@@ -1,4 +1,6 @@
-package mimer29or40.foremanfx;
+package mimer29or40.foremanfx.model;
+
+import mimer29or40.foremanfx.DataCache;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -10,9 +12,9 @@ public class Item
     public static List<String> localeCategories = Arrays.asList("item-name", "fluid-name", "entity-name",
                                                                 "equipment-name");
 
-    private String          name;
-    private List<Recipe> recipes;
-    private BufferedImage   icon;
+    private String        name;
+    private List<Recipe>  recipes;
+    private BufferedImage icon;
     public boolean isMissingIcon = false;
 
     private Item()

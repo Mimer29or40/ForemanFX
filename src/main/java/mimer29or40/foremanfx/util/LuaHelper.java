@@ -1,6 +1,6 @@
 package mimer29or40.foremanfx.util;
 
-import mimer29or40.foremanfx.MissingPrototypeValueException;
+import mimer29or40.foremanfx.model.MissingPrototypeValueException;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 

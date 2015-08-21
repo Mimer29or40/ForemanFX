@@ -1,5 +1,6 @@
 package mimer29or40.foremanfx;
 
+import mimer29or40.foremanfx.model.*;
 import mimer29or40.foremanfx.util.JsonHelper;
 import mimer29or40.foremanfx.util.Logger;
 import mimer29or40.foremanfx.util.LuaHelper;
@@ -70,6 +71,7 @@ public class DataCache
         String dataLoaderFile = dataPath + "/core/lualib/dataloader.lua";
         try
         {
+            Logger.info("Running Lua...");
             globals.loadfile(dataLoaderFile).call();
         }
         catch (Exception e)
@@ -124,6 +126,8 @@ public class DataCache
             }
         }
 
+        Logger.info("Extracting data....");
+
         LuaTable dataTable = LuaHelper.getTable(globals, "data");
         LuaTable rawTable = LuaHelper.getTable(dataTable, "raw");
 
@@ -133,14 +137,26 @@ public class DataCache
         {
             interpretItems(rawTable, type);
         }
+        Logger.info(items.size() + " Items Loaded");
 
         Logger.info("Loading Recipes...");
         LuaTable recipeTable = LuaHelper.getTable(rawTable, "recipe");
-        if (recipeTable != null)
+        if (recipeTable != LuaValue.NIL)
         {
             for (LuaValue key : recipeTable.keys())
             {
                 interpretLuaRecipe(key.toString(), LuaHelper.getTable(recipeTable, key));
+            }
+        }
+        Logger.info(recipes.size() + " Recipes Loaded");
+
+        Logger.info("Loading Assembling Machines...");
+        LuaTable assemblerTable = LuaHelper.getTable(rawTable, "assembling-machine");
+        if (assemblerTable != LuaValue.NIL)
+        {
+            for (LuaValue key : assemblerTable.keys())
+            {
+                interpretAssemblingMachine(key.toString(), LuaHelper.getTable(assemblerTable, key));
             }
         }
 
@@ -552,6 +568,11 @@ public class DataCache
         }
     }
 
+    private static void interpretAssemblingMachine(String name, LuaTable assemblers)
+    {
+        Logger.debug(name);
+    }
+
     private static Map<Item, Float> extractResultsFromLuaRecipe(LuaTable recipe)
     {
         Map<Item, Float> results = new HashMap<>();
@@ -582,8 +603,6 @@ public class DataCache
                 { results.put(newResult, amount); }
             }
         }
-
-//        return null;
         return results;
     }
 

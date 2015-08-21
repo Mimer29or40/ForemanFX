@@ -1,4 +1,4 @@
-package mimer29or40.foremanfx;
+package mimer29or40.foremanfx.model;
 
 public class ModDependency
 {

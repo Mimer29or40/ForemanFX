@@ -1,4 +1,6 @@
-package mimer29or40.foremanfx;
+package mimer29or40.foremanfx.model;
+
+import mimer29or40.foremanfx.DataCache;
 
 import java.awt.image.BufferedImage;
 import java.util.Map;

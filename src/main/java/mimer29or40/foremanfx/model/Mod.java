@@ -1,15 +1,15 @@
-package mimer29or40.foremanfx;
+package mimer29or40.foremanfx.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Mod
 {
-    public String name  = "";
-    public String title = "";
+    public String name        = "";
+    public String title       = "";
     public String description = "";
     public String author      = "";
-    public String dir   = "";
+    public String dir         = "";
     public Version parsedVersion;
     public List<String>        dependencies       = new ArrayList<>();
     public List<ModDependency> parsedDependencies = new ArrayList<>();

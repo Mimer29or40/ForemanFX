@@ -9,8 +9,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.ForemanFX;
-import mimer29or40.foremanfx.Language;
 import mimer29or40.foremanfx.Settings;
+import mimer29or40.foremanfx.model.Language;
 import mimer29or40.foremanfx.util.Util;
 
 import java.io.File;

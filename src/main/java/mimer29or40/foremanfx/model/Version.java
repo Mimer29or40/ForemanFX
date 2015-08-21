@@ -1,4 +1,4 @@
-package mimer29or40.foremanfx;
+package mimer29or40.foremanfx.model;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

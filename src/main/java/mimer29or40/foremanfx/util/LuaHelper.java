@@ -38,8 +38,7 @@ public class LuaHelper
             }
             else
             {
-                Logger.debug(prefix + " Key: %s Type: %s Value: %s", key.checkjstring(), getType(value), table.get(
-                        key));
+                Logger.debug(prefix + " Key: %s Value: %s", key.checkjstring(), table.get(key));
             }
         }
     }
@@ -72,7 +71,7 @@ public class LuaHelper
     public static float getFloat(LuaTable table, LuaValue key, boolean canBeMissing, float defaultValue)
     {
         LuaValue value = table.get(key);
-        if (value == null)
+        if (value == LuaValue.NIL)
         {
             if (canBeMissing)
             { return defaultValue; }
@@ -112,7 +111,7 @@ public class LuaHelper
     public static int getInt(LuaTable table, LuaValue key, boolean canBeMissing, int defaultValue)
     {
         LuaValue value = table.get(key);
-        if (value == null)
+        if (value == LuaValue.NIL)
         {
             if (canBeMissing)
             { return defaultValue; }
@@ -154,7 +153,7 @@ public class LuaHelper
     public static String getString(LuaTable table, LuaValue key, boolean canBeMissing, String defaultValue)
     {
         LuaValue value = table.get(key);
-        if (value == null)
+        if (value == LuaValue.NIL)
         {
             if (canBeMissing)
             { return defaultValue; }

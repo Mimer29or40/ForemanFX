@@ -1,8 +1,8 @@
 package mimer29or40.foremanfx;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 public class Item
@@ -11,7 +11,7 @@ public class Item
                                                                 "equipment-name");
 
     private String          name;
-    private HashSet<Recipe> recipes;
+    private List<Recipe> recipes;
     private BufferedImage   icon;
     public boolean isMissingIcon = false;
 
@@ -24,7 +24,7 @@ public class Item
     {
         this.name = name;
         this.icon = icon;
-        this.recipes = new HashSet<>();
+        this.recipes = new ArrayList<>();
     }
 
     public Item(String name)
@@ -46,7 +46,7 @@ public class Item
     {
         for (String category : localeCategories)
         {
-            if (DataCache.localeFiles.get(category).containsKey(name))
+            if (DataCache.localeFiles.containsKey(category) && DataCache.localeFiles.get(category).containsKey(name))
             {
                 return DataCache.localeFiles.get(category).get(name);
             }
@@ -54,7 +54,7 @@ public class Item
         return name;
     }
 
-    public HashSet<Recipe> getRecipes()
+    public List<Recipe> getRecipes()
     {
         return recipes;
     }

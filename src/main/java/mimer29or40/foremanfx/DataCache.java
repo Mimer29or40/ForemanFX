@@ -140,7 +140,7 @@ public class DataCache
         {
             for (LuaValue key : recipeTable.keys())
             {
-                interpretLuaRecipe(key.tojstring(), LuaHelper.getTable(recipeTable, key));
+                interpretLuaRecipe(key.toString(), LuaHelper.getTable(recipeTable, key));
             }
         }
 
@@ -485,8 +485,7 @@ public class DataCache
 
             if (!Util.isNullOrWhitespace(fullPath))
             {
-                for (int i = 1; i < splitPath.length;
-                     i++) // Skip the first split section because it's the mod name, not a directory
+                for (int i = 1; i < splitPath.length; i++)
                 {
                     fullPath = fullPath + "/" + splitPath[i];
                 }
@@ -499,7 +498,6 @@ public class DataCache
         }
         catch (Exception e)
         {
-            Logger.error("Error loading icon " + fileName + " " + e.getMessage());
             return null;
         }
     }
@@ -533,11 +531,9 @@ public class DataCache
         {
             float time = LuaHelper.getFloat(recipe, "energy_required", true, 0.5F);
             Map<Item, Float> ingredients = extractIngredientsFromLuaRecipe(recipe);
-            Logger.debug(name);
-            Map<Item, Float> results = extractResultsFromLuaRecipe(recipe); // TODO this seems to not have some recipes
+            Map<Item, Float> results = extractResultsFromLuaRecipe(recipe);
 
             Recipe newRecipe = new Recipe(name, time == 0.0F ? defaultRecipeTime : time, ingredients, results);
-
 
             newRecipe.category = LuaHelper.getString(recipe, "category", true, "crafting");
 
@@ -566,14 +562,24 @@ public class DataCache
             if (resultCount == 0F)
             { resultCount = 1F; }
             results.put(findOrCreateUnknownItem(resultName), resultCount);
-            Logger.debug("  " + resultName + " " + resultCount);
+
         }
         else if (recipe.get(LuaValue.valueOf("results")) != LuaValue.NIL)
         {
             LuaTable resultsTable = (LuaTable) recipe.get(LuaValue.valueOf("results"));
-            for (LuaValue key : ((LuaTable) resultsTable.get(1)).keys())
+            for (LuaValue key : resultsTable.keys())
             {
-                Logger.debug("  " + key + " " + resultsTable.get(key));
+                LuaTable result = LuaHelper.getTable(resultsTable, key);
+                Item newResult = LuaHelper.getValue(result, "name") != LuaValue.NIL ?
+                                 findOrCreateUnknownItem(LuaHelper.getString(result, "name")) :
+                                 findOrCreateUnknownItem(LuaHelper.getString(result, 1));
+                float amount = LuaHelper.getValue(result, "amount") != LuaValue.NIL ?
+                               LuaHelper.getFloat(result, "amount") :
+                               LuaHelper.getFloat(result, 2);
+                if (results.containsKey(newResult))
+                { results.put(newResult, results.get(newResult) + amount); }
+                else
+                { results.put(newResult, amount); }
             }
         }
 
@@ -588,24 +594,20 @@ public class DataCache
         for (LuaValue key : ingredientsTable.keys())
         {
             LuaTable ingredientTable = LuaHelper.getTable(ingredientsTable, key);
-            String name;
-            float amount;
-            name = LuaHelper.getString(ingredientTable, "name") == null ?
+
+            String name = LuaHelper.getValue(ingredientTable, "name") != LuaValue.NIL ?
                    LuaHelper.getString(ingredientTable, "name") :
-                   LuaHelper.getString(ingredientTable, 1);
-            amount = LuaHelper.getValue(ingredientTable, "amount") != null ?
+                   ingredientTable.get(1).checkjstring();
+            float amount = LuaHelper.getValue(ingredientTable, "amount") != LuaValue.NIL ?
                      LuaHelper.getValue(ingredientTable, "amount").tofloat() :
                      ingredientTable.get(2).tofloat();
+
             Item ingredient = findOrCreateUnknownItem(name);
+
             if (!ingredients.containsKey(ingredient))
-            {
                 ingredients.put(ingredient, amount);
-            }
             else
-            {
-                amount += ingredients.get(ingredient);
-                ingredients.put(ingredient, amount);
-            }
+            { ingredients.put(ingredient, ingredients.get(ingredient) + amount); }
         }
         return ingredients;
     }
@@ -644,6 +646,38 @@ public class DataCache
             for (String key : languages.keySet())
             {
                 writer.println("  Name: " + key + "  " + languages.get(key).toString());
+            }
+            writer.println("Items:");
+            for (String key : items.keySet())
+            {
+                Item item = items.get(key);
+                writer.println("  Name: " + item.getName());
+                writer.println("  Missing Icon: " + item.isMissingIcon);
+                for (Recipe recipe : item.getRecipes())
+                {
+                    writer.println("    Recipe: " + recipe.getName());
+                }
+                writer.println("");
+            }
+            writer.println("Recipes:");
+            for (String key : recipes.keySet())
+            {
+                Recipe recipe = recipes.get(key);
+                writer.println("  Name: " + recipe.getName());
+                writer.println("  Time: " + recipe.time);
+                writer.println("  Category: " + recipe.category);
+                writer.println("  Missing Recipe: " + recipe.isMissingRecipe);
+                writer.println("  Ingredients: ");
+                for (Item item : recipe.getIngredients().keySet())
+                {
+                    writer.println("    Item: " + item.getName() + " x" + recipe.getIngredients().get(item));
+                }
+                writer.println("  Results: ");
+                for (Item item : recipe.getResults().keySet())
+                {
+                    writer.println("    Item: " + item.getName() + " x" + recipe.getResults().get(item));
+                }
+                writer.println(" ");
             }
             writer.println("Default Recipe Time: " + defaultRecipeTime);
             writer.println("Locales:");

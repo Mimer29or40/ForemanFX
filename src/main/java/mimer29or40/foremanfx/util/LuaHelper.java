@@ -38,23 +38,35 @@ public class LuaHelper
             }
             else
             {
-                Logger.debug(prefix + " Key: %s Value: %s", key.checkjstring(), table.get(key));
+                Logger.debug(prefix + " " + key.checkjstring() + " " + table.get(key));
             }
         }
     }
 
-    public static LuaTable getTable(LuaValue value, LuaValue key)
+    public static LuaTable getTable(LuaValue value, LuaValue key, boolean canBeMissing)
     {
         LuaValue table = value.get(key);
         if (getType(table).equals("table"))
         { return (LuaTable) table; }
-        Logger.error("LuaValue at key '%s' is not a table. Found %s", key.checkjstring(), getType(value));
-        return null;
+        if (canBeMissing)
+        { return LuaTable.tableOf(); }
+        Logger.error("LuaValue at key '%s' is not a table. Found %s", key.checkjstring(), getType(table));
+        return LuaTable.tableOf();
+    }
+
+    public static LuaTable getTable(LuaValue value, String key, boolean canBeMissing)
+    {
+        return getTable(value, LuaValue.valueOf(key), canBeMissing);
+    }
+
+    public static LuaTable getTable(LuaValue value, LuaValue key)
+    {
+        return getTable(value, key, false);
     }
 
     public static LuaTable getTable(LuaValue value, String key)
     {
-        return getTable(value, LuaValue.valueOf(key));
+        return getTable(value, LuaValue.valueOf(key), false);
     }
 
     public static LuaValue getValue(LuaTable table, LuaValue key)
@@ -90,7 +102,7 @@ public class LuaHelper
 
     public static float getFloat(LuaTable table, String key, boolean canBeMissing)
     {
-        return getFloat(table, key, canBeMissing, 0F);
+        return getFloat(table, LuaValue.valueOf(key), canBeMissing, 0F);
     }
 
     public static float getFloat(LuaTable table, LuaValue key)
@@ -117,12 +129,12 @@ public class LuaHelper
             { return defaultValue; }
             throw new MissingPrototypeValueException(table, key.toString(), "Key is Missing");
         }
-        if (!getType(value).equals("int"))
-        {
-            throw new MissingPrototypeValueException(table, key.toString(), "Expected Int, got ('" + getType(
-                    value) + "')");
-        }
-        return value.checkint();
+//        if (!getType(value).equals("int"))
+//        {
+//            throw new MissingPrototypeValueException(table, key.toString(), "Expected Int, got ('" + getType(
+//                    value) + "')");
+//        }
+        return value.toint();
     }
 
     public static int getInt(LuaTable table, String key, boolean canBeMissing, int defaultValue)

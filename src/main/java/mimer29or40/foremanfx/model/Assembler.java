@@ -21,4 +21,24 @@ public class Assembler extends ProductionEntity
     {
         return "Assembler: " + name;
     }
+
+    public List<String> getCategories()
+    {
+        return categories;
+    }
+
+    public void addCategories(String cat)
+    {
+        categories.add(cat);
+    }
+
+    public List<String> getAllowedEffects()
+    {
+        return allowedEffects;
+    }
+
+    public void addAllowedEffects(String effect)
+    {
+        allowedEffects.add(effect);
+    }
 }

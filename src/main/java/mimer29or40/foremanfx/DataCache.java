@@ -34,7 +34,7 @@ public class DataCache
 
     public static Map<String, Item>   items   = new HashMap<>();
     public static Map<String, Recipe> recipes = new HashMap<>();
-//    public static Map<String, Assembler> assemblers = new HashMap<>();
+    public static Map<String, Assembler> assemblers = new HashMap<>();
 //    public static Map<String, Miner> miners = new HashMap<>();
 //    public static Map<String, Resource> resources = new HashMap<>();
 //    public static Map<String, Module> modules = new HashMap<>();
@@ -159,6 +159,7 @@ public class DataCache
                 interpretAssemblingMachine(key.toString(), LuaHelper.getTable(assemblerTable, key));
             }
         }
+        Logger.info(assemblers.size() + " Assembling Machines Loaded");
 
         loadUnknownIcon();
 
@@ -265,7 +266,7 @@ public class DataCache
             }
         }
 
-        Map<String, Boolean> enabledModsFromFile = new HashMap<String, Boolean>();
+        Map<String, Boolean> enabledModsFromFile = new HashMap<>();
         File modListFile = new File(modFile, "mod-list.json");
         if (modListFile.exists())
         {
@@ -446,7 +447,7 @@ public class DataCache
                                     {
                                         if (!localeFiles.containsKey(currentIniSection))
                                         {
-                                            localeFiles.put(currentIniSection, new HashMap<String, String>());
+                                            localeFiles.put(currentIniSection, new HashMap<>());
                                         }
                                         String[] split = line.split("=");
                                         if (split.length == 2)
@@ -568,9 +569,50 @@ public class DataCache
         }
     }
 
-    private static void interpretAssemblingMachine(String name, LuaTable assemblers)
+    private static void interpretAssemblingMachine(String name, LuaTable assembler)
     {
-        Logger.debug(name);
+        try
+        {
+            Assembler newAssembler = new Assembler(name);
+
+            newAssembler.icon = loadImage(LuaHelper.getString(assembler, "icon", true));
+            newAssembler.maxIngredients = LuaHelper.getInt(assembler, "ingredient_count");
+            newAssembler.moduleSlots = LuaHelper.getInt(assembler, "module_slots", true, 0);
+            if (newAssembler.moduleSlots == 0)
+            {
+                LuaTable moduleTable = LuaHelper.getTable(assembler, "module_specification", true);
+                if (moduleTable != LuaValue.NIL)
+                { newAssembler.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
+            }
+            newAssembler.speed = LuaHelper.getFloat(assembler, "crafting_speed");
+            LuaTable effects = LuaHelper.getTable(assembler, "allowed_effects", true);
+            if (effects != LuaValue.NIL)
+            {
+                for (LuaValue key : effects.keys())
+                {
+                    newAssembler.addAllowedEffects(LuaHelper.getString(effects, key));
+                }
+            }
+            LuaTable categories = LuaHelper.getTable(assembler, "crafting_categories", true);
+            for (LuaValue key : categories.keys())
+            {
+                newAssembler.addCategories(LuaHelper.getString(categories, key));
+            }
+//            for (String s : enabledAssemblers) TODO find settings
+//            {
+//                if (s.split("|")[0].equals(name))
+//                {
+//                    newAssembler.enabled = (s.split("|")[1].equals("True"));
+//                }
+//            }
+            assemblers.put(name, newAssembler);
+        }
+        catch (MissingPrototypeValueException e)
+        {
+            Logger.error(String.format(
+                    "Error reading value '%s' from assembler prototype '%s'. Returned error message: '%s'",
+                    e.key, name, e.getMessage()));
+        }
     }
 
     private static Map<Item, Float> extractResultsFromLuaRecipe(LuaTable recipe)

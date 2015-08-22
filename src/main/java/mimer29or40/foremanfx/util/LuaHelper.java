@@ -43,6 +43,26 @@ public class LuaHelper
         }
     }
 
+    public static boolean isNull(LuaValue value)
+    {
+        return value == LuaValue.NIL;
+    }
+
+    public static boolean isNull(LuaTable table, LuaValue key)
+    {
+        return isNull(table.get(key));
+    }
+
+    public static boolean isNull(LuaTable table, String key)
+    {
+        return isNull(table.get(LuaValue.valueOf(key)));
+    }
+
+    public static boolean isNull(LuaTable table, int key)
+    {
+        return isNull(table.get(key));
+    }
+
     public static LuaTable getTable(LuaValue value, LuaValue key, boolean canBeMissing)
     {
         LuaValue table = value.get(key);

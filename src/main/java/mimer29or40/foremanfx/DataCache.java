@@ -142,7 +142,7 @@ public class DataCache
 
         Logger.info("Loading Recipes...");
         LuaTable recipeTable = LuaHelper.getTable(rawTable, "recipe");
-        if (recipeTable != LuaValue.NIL)
+        if (!LuaHelper.isNull(recipeTable))
         {
             for (LuaValue key : recipeTable.keys())
             {
@@ -153,7 +153,7 @@ public class DataCache
 
         Logger.info("Loading Assembling Machines...");
         LuaTable assemblerTable = LuaHelper.getTable(rawTable, "assembling-machine");
-        if (assemblerTable != LuaValue.NIL)
+        if (!LuaHelper.isNull(assemblerTable))
         {
             for (LuaValue key : assemblerTable.keys())
             {
@@ -162,7 +162,7 @@ public class DataCache
         }
         Logger.info("Loading Furnaces...");
         LuaTable furnaceTable = LuaHelper.getTable(rawTable, "furnace");
-        if (furnaceTable != LuaValue.NIL)
+        if (!LuaHelper.isNull(furnaceTable))
         {
             for (LuaValue key : furnaceTable.keys())
             {
@@ -173,7 +173,7 @@ public class DataCache
 
         Logger.info("Loading Miners...");
         LuaTable minerTable = LuaHelper.getTable(rawTable, "mining-drill");
-        if (minerTable != LuaValue.NIL)
+        if (!LuaHelper.isNull(minerTable))
         {
             for (LuaValue key : minerTable.keys())
             {
@@ -183,10 +183,29 @@ public class DataCache
         Logger.info(miners.size() + " Miners Loaded");
 
         Logger.info("Loading Resources...");
-        // module
-        // resource
-        // inserter
-        // transport-belt
+        LuaTable resourceTable = LuaHelper.getTable(rawTable, "resource");
+        if (!LuaHelper.isNull(resourceTable))
+        {
+            for (LuaValue key : resourceTable.keys())
+            {
+                interpretResource(key.toString(), LuaHelper.getTable(resourceTable, key));
+            }
+        }
+        Logger.info(resources.size() + " Resources Loaded");
+
+        Logger.info("Loading Modules...");
+        LuaTable moduleTable = LuaHelper.getTable(rawTable, "module");
+        if (!LuaHelper.isNull(moduleTable))
+        {
+            for (LuaValue key : moduleTable.keys())
+            {
+                interpretModule(key.toString(), LuaHelper.getTable(moduleTable, key));
+            }
+        }
+        Logger.info(modules.size() + " Modules Loaded");
+
+        // TODO inserter
+        // TODO transport-belt
 
         loadUnknownIcon();
 
@@ -608,12 +627,12 @@ public class DataCache
             if (newAssembler.moduleSlots == 0)
             {
                 LuaTable moduleTable = LuaHelper.getTable(assembler, "module_specification", true);
-                if (moduleTable != LuaValue.NIL)
+                if (!LuaHelper.isNull(moduleTable))
                 { newAssembler.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
             }
             newAssembler.speed = LuaHelper.getFloat(assembler, "crafting_speed");
             LuaTable effects = LuaHelper.getTable(assembler, "allowed_effects", true);
-            if (effects != LuaValue.NIL)
+            if (!LuaHelper.isNull(effects))
             {
                 for (LuaValue key : effects.keys())
                 {
@@ -654,7 +673,7 @@ public class DataCache
             if (newFurnace.moduleSlots == 0)
             {
                 LuaTable moduleTable = LuaHelper.getTable(furnace, "module_specification", true);
-                if (moduleTable != LuaValue.NIL)
+                if (!LuaHelper.isNull(moduleTable))
                 { newFurnace.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
             }
             newFurnace.speed = LuaHelper.getFloat(furnace, "crafting_speed");
@@ -675,7 +694,7 @@ public class DataCache
         catch (MissingPrototypeValueException e)
         {
             Logger.error(String.format(
-                    "Error reading value '%s' from assembler prototype '%s'. Returned error message: '%s'",
+                    "Error reading value '%s' from furnace prototype '%s'. Returned error message: '%s'",
                     e.key, name, e.getMessage()));
         }
     }
@@ -692,7 +711,7 @@ public class DataCache
             if (newMiner.moduleSlots == 0)
             {
                 LuaTable moduleTable = LuaHelper.getTable(miner, "module_specification", true);
-                if (moduleTable != LuaValue.NIL)
+                if (!LuaHelper.isNull(moduleTable))
                 { newMiner.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
             }
             LuaTable categories = LuaHelper.getTable(miner, "crafting_categories", true);
@@ -712,7 +731,81 @@ public class DataCache
         catch (MissingPrototypeValueException e)
         {
             Logger.error(String.format(
-                    "Error reading value '%s' from assembler prototype '%s'. Returned error message: '%s'",
+                    "Error reading value '%s' from miner prototype '%s'. Returned error message: '%s'",
+                    e.key, name, e.getMessage()));
+        }
+    }
+
+    private static void interpretResource(String name, LuaTable resource)
+    {
+        try
+        {
+            LuaTable minableTable = LuaHelper.getTable(resource, "minable");
+            if (LuaHelper.isNull(minableTable))
+            {
+                return; // Cant obtain resource
+            }
+            Resource newResource = new Resource(name);
+            newResource.category = LuaHelper.getString(resource, "category", true, "basic-solid");
+            newResource.hardness = LuaHelper.getFloat(minableTable, "hardness");
+            newResource.time = LuaHelper.getFloat(minableTable, "mining_time");
+
+            if (!LuaHelper.isNull(minableTable, "result"))
+            {
+                newResource.result = LuaHelper.getString(minableTable, "result");
+            }
+            else
+            {
+                try
+                {
+                    LuaTable resultsTable = LuaHelper.getTable(minableTable, "results");
+                    newResource.result = LuaHelper.getString((LuaTable) resultsTable.get(1), "name");
+                }
+                catch (Exception e)
+                {
+                    throw new MissingPrototypeValueException(minableTable, "results", e.getMessage());
+                }
+            }
+            resources.put(name, newResource);
+        }
+        catch (MissingPrototypeValueException e)
+        {
+            Logger.error(String.format(
+                    "Error reading value '%s' from resource prototype '%s'. Returned error message: '%s'",
+                    e.key, name, e.getMessage()));
+        }
+    }
+
+    private static void interpretModule(String name, LuaTable module)
+    {
+        try
+        {
+            float speedBonus = 0F;
+
+            LuaTable effectTable = LuaHelper.getTable(module, "effect");
+            LuaTable speedTable = LuaHelper.getTable(effectTable, "speed", true);
+            if (!LuaHelper.isNull(speedTable))
+            {
+                speedBonus = LuaHelper.getFloat(speedTable, "bonus", true, -1F);
+            }
+            if (LuaHelper.isNull(speedTable) || speedBonus <= 0)
+            { return; }
+
+            Module newModule = new Module(name, speedBonus);
+
+//            for (String s : enabledAssemblers) TODO find settings
+//            {
+//                if (s.split("|")[0].equals(name))
+//                {
+//                    newAssembler.enabled = (s.split("|")[1].equals("True"));
+//                }
+//            }
+            modules.put(name, newModule);
+        }
+        catch (MissingPrototypeValueException e)
+        {
+            Logger.error(String.format(
+                    "Error reading value '%s' from module prototype '%s'. Returned error message: '%s'",
                     e.key, name, e.getMessage()));
         }
     }
@@ -720,7 +813,7 @@ public class DataCache
     private static Map<Item, Float> extractResultsFromLuaRecipe(LuaTable recipe)
     {
         Map<Item, Float> results = new HashMap<>();
-        if (recipe.get(LuaValue.valueOf("result")) != LuaValue.NIL)
+        if (!LuaHelper.isNull(recipe, "result"))
         {
             String resultName = LuaHelper.getString(recipe, "result", false);
             float resultCount = LuaHelper.getFloat(recipe, "result_count", true);
@@ -729,16 +822,16 @@ public class DataCache
             results.put(findOrCreateUnknownItem(resultName), resultCount);
 
         }
-        else if (recipe.get(LuaValue.valueOf("results")) != LuaValue.NIL)
+        else if (!LuaHelper.isNull(recipe, "results"))
         {
             LuaTable resultsTable = (LuaTable) recipe.get(LuaValue.valueOf("results"));
             for (LuaValue key : resultsTable.keys())
             {
                 LuaTable result = LuaHelper.getTable(resultsTable, key);
-                Item newResult = LuaHelper.getValue(result, "name") != LuaValue.NIL ?
+                Item newResult = !LuaHelper.isNull(result, "name") ?
                                  findOrCreateUnknownItem(LuaHelper.getString(result, "name")) :
                                  findOrCreateUnknownItem(LuaHelper.getString(result, 1));
-                float amount = LuaHelper.getValue(result, "amount") != LuaValue.NIL ?
+                float amount = !LuaHelper.isNull(result, "amount") ?
                                LuaHelper.getFloat(result, "amount") :
                                LuaHelper.getFloat(result, 2);
                 if (results.containsKey(newResult))
@@ -758,10 +851,10 @@ public class DataCache
         {
             LuaTable ingredientTable = LuaHelper.getTable(ingredientsTable, key);
 
-            String name = LuaHelper.getValue(ingredientTable, "name") != LuaValue.NIL ?
+            String name = !LuaHelper.isNull(ingredientTable, "name") ?
                    LuaHelper.getString(ingredientTable, "name") :
                    ingredientTable.get(1).checkjstring();
-            float amount = LuaHelper.getValue(ingredientTable, "amount") != LuaValue.NIL ?
+            float amount = !LuaHelper.isNull(ingredientTable, "amount") ?
                      LuaHelper.getValue(ingredientTable, "amount").tofloat() :
                      ingredientTable.get(2).tofloat();
 

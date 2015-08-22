@@ -4,7 +4,7 @@ public class Logger
 {
     private static void log(String logLevel, Object object)
     {
-        System.out.println(String.format("[%s][ForemanFX]: %s", logLevel, String.valueOf(object)));
+        System.out.println(String.format("[%s]: %s", logLevel, String.valueOf(object)));
     }
 
     public static void off(Object object)

@@ -35,9 +35,9 @@ public class DataCache
     public static Map<String, Item>   items   = new HashMap<>();
     public static Map<String, Recipe> recipes = new HashMap<>();
     public static Map<String, Assembler> assemblers = new HashMap<>();
-//    public static Map<String, Miner> miners = new HashMap<>();
-//    public static Map<String, Resource> resources = new HashMap<>();
-//    public static Map<String, Module> modules = new HashMap<>();
+    public static Map<String, Miner>    miners    = new HashMap<>();
+    public static Map<String, Resource> resources = new HashMap<>();
+    public static Map<String, Module>   modules   = new HashMap<>();
 //    public static Map<String, Inserter> inserters = new HashMap<>();
 
     private static final float defaultRecipeTime = 0.5f;
@@ -130,6 +130,7 @@ public class DataCache
 
         LuaTable dataTable = LuaHelper.getTable(globals, "data");
         LuaTable rawTable = LuaHelper.getTable(dataTable, "raw");
+        debugLuaData(rawTable, "rawTable");
 
         Logger.info("Loading Items...");
         for (String type : new String[]{"item", "fluid", "capsule", "module", "ammo", "gun", "armor",
@@ -159,7 +160,33 @@ public class DataCache
                 interpretAssemblingMachine(key.toString(), LuaHelper.getTable(assemblerTable, key));
             }
         }
+        Logger.info("Loading Furnaces...");
+        LuaTable furnaceTable = LuaHelper.getTable(rawTable, "furnace");
+        if (furnaceTable != LuaValue.NIL)
+        {
+            for (LuaValue key : furnaceTable.keys())
+            {
+                interpretFurnaces(key.toString(), LuaHelper.getTable(furnaceTable, key));
+            }
+        }
         Logger.info(assemblers.size() + " Assembling Machines Loaded");
+
+        Logger.info("Loading Miners...");
+        LuaTable minerTable = LuaHelper.getTable(rawTable, "mining-drill");
+        if (minerTable != LuaValue.NIL)
+        {
+            for (LuaValue key : minerTable.keys())
+            {
+                interpretMiner(key.toString(), LuaHelper.getTable(minerTable, key));
+            }
+        }
+        Logger.info(miners.size() + " Miners Loaded");
+
+        Logger.info("Loading Resources...");
+        // module
+        // resource
+        // inserter
+        // transport-belt
 
         loadUnknownIcon();
 
@@ -198,10 +225,10 @@ public class DataCache
         mods.clear();
         items.clear();
         recipes.clear();
-//        assemblers.clear();
-//        miners.clear();
-//        resources.clear();
-//        modules.clear();
+        assemblers.clear();
+        miners.clear();
+        resources.clear();
+        modules.clear();
 //        inserters.clear();
 //        colourCache.clear();
         languages.clear();
@@ -615,6 +642,81 @@ public class DataCache
         }
     }
 
+    private static void interpretFurnaces(String name, LuaTable furnace)
+    {
+        try
+        {
+            Assembler newFurnace = new Assembler(name);
+
+            newFurnace.icon = loadImage(LuaHelper.getString(furnace, "icon", true));
+            newFurnace.maxIngredients = 1;
+            newFurnace.moduleSlots = LuaHelper.getInt(furnace, "module_slots", true, 0);
+            if (newFurnace.moduleSlots == 0)
+            {
+                LuaTable moduleTable = LuaHelper.getTable(furnace, "module_specification", true);
+                if (moduleTable != LuaValue.NIL)
+                { newFurnace.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
+            }
+            newFurnace.speed = LuaHelper.getFloat(furnace, "crafting_speed");
+            LuaTable categories = LuaHelper.getTable(furnace, "crafting_categories", true);
+            for (LuaValue key : categories.keys())
+            {
+                newFurnace.addCategories(LuaHelper.getString(categories, key));
+            }
+//            for (String s : enabledAssemblers) TODO find settings
+//            {
+//                if (s.split("|")[0].equals(name))
+//                {
+//                    newAssembler.enabled = (s.split("|")[1].equals("True"));
+//                }
+//            }
+            assemblers.put(name, newFurnace);
+        }
+        catch (MissingPrototypeValueException e)
+        {
+            Logger.error(String.format(
+                    "Error reading value '%s' from assembler prototype '%s'. Returned error message: '%s'",
+                    e.key, name, e.getMessage()));
+        }
+    }
+
+    private static void interpretMiner(String name, LuaTable miner)
+    {
+        try
+        {
+            Miner newMiner = new Miner(name);
+            newMiner.icon = loadImage(LuaHelper.getString(miner, "icon", true));
+            newMiner.miningPower = LuaHelper.getFloat(miner, "mining_power");
+            newMiner.speed = LuaHelper.getFloat(miner, "mining_speed");
+            newMiner.moduleSlots = LuaHelper.getInt(miner, "module_slots", true, 0);
+            if (newMiner.moduleSlots == 0)
+            {
+                LuaTable moduleTable = LuaHelper.getTable(miner, "module_specification", true);
+                if (moduleTable != LuaValue.NIL)
+                { newMiner.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
+            }
+            LuaTable categories = LuaHelper.getTable(miner, "crafting_categories", true);
+            for (LuaValue key : categories.keys())
+            {
+                newMiner.resourceCategories.add(LuaHelper.getString(categories, key));
+            }
+//            for (String s : enabledAssemblers) TODO find settings
+//            {
+//                if (s.split("|")[0].equals(name))
+//                {
+//                    newAssembler.enabled = (s.split("|")[1].equals("True"));
+//                }
+//            }
+            miners.put(name, newMiner);
+        }
+        catch (MissingPrototypeValueException e)
+        {
+            Logger.error(String.format(
+                    "Error reading value '%s' from assembler prototype '%s'. Returned error message: '%s'",
+                    e.key, name, e.getMessage()));
+        }
+    }
+
     private static Map<Item, Float> extractResultsFromLuaRecipe(LuaTable recipe)
     {
         Map<Item, Float> results = new HashMap<>();
@@ -671,6 +773,43 @@ public class DataCache
             { ingredients.put(ingredient, ingredients.get(ingredient) + amount); }
         }
         return ingredients;
+    }
+
+    private static void debugLuaData(LuaTable table, String tableName)
+    {
+        // This will print out all of the rawData to a log file.
+        try
+        {
+            File log = new File("./" + tableName + ".log");
+            if (!log.exists())
+            { log.createNewFile(); }
+
+            PrintWriter writer = new PrintWriter(log);
+
+            writeLines(table, writer, tableName);
+
+            writer.close();
+        }
+        catch (Exception e)
+        {
+            Logger.error("Something when wrong... " + e.getMessage());
+        }
+    }
+
+    private static void writeLines(LuaTable table, PrintWriter writer, String prefix)
+    {
+        for (LuaValue key : table.keys())
+        {
+            LuaValue value = table.get(key);
+            if (LuaHelper.getType(value).equals("table"))
+            {
+                writeLines((LuaTable) value, writer, prefix + " " + key.checkjstring());
+            }
+            else
+            {
+                writer.println(prefix + " " + key.checkjstring() + " " + table.get(key));
+            }
+        }
     }
 
     private static void debugData()
@@ -762,6 +901,7 @@ public class DataCache
                 writer.println("  File: " + key);
                 writer.println("  Exception: " + failedPathDirectories.get(key).getMessage());
             }
+
             writer.close();
         }
         catch (Exception e)

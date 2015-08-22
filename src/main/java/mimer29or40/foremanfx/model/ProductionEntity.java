@@ -1,17 +1,16 @@
 package mimer29or40.foremanfx.model;
 
+import javafx.scene.image.Image;
 import mimer29or40.foremanfx.util.Util;
-
-import java.awt.image.BufferedImage;
 
 public abstract class ProductionEntity
 {
-    protected String        name;
-    public    String        localizedName;
-    public    boolean       enabled;
-    public    BufferedImage icon;
-    public    int           moduleSlots;
-    public    float         speed;
+    protected String  name;
+    public    String  localizedName;
+    public    boolean enabled;
+    public    Image   icon;
+    public    int     moduleSlots;
+    public    float   speed;
 
     public String getName()
     {

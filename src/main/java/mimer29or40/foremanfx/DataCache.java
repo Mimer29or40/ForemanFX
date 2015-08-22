@@ -1,5 +1,6 @@
 package mimer29or40.foremanfx;
 
+import javafx.scene.image.Image;
 import mimer29or40.foremanfx.model.*;
 import mimer29or40.foremanfx.util.JsonHelper;
 import mimer29or40.foremanfx.util.Logger;
@@ -11,8 +12,6 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -32,8 +31,8 @@ public class DataCache
     public static List<Mod>             mods      = new ArrayList<>();
     public static Map<String, Language> languages = new TreeMap<>();
 
-    public static Map<String, Item>   items   = new HashMap<>();
-    public static Map<String, Recipe> recipes = new HashMap<>();
+    public static Map<String, Item>     items     = new HashMap<>();
+    public static Map<String, Recipe>   recipes   = new HashMap<>();
     public static Map<String, Assembler> assemblers = new HashMap<>();
     public static Map<String, Miner>    miners    = new HashMap<>();
     public static Map<String, Resource> resources = new HashMap<>();
@@ -41,9 +40,9 @@ public class DataCache
 //    public static Map<String, Inserter> inserters = new HashMap<>();
 
     private static final float defaultRecipeTime = 0.5f;
-    public static BufferedImage unknownIcon;
-    //    private static Map<BufferedImage, Color>        colourCache = new HashMap<>();
-    public static Map<String, Map<String, String>> localeFiles = new HashMap<>();
+    public static Image unknownIcon;
+    //    private static Map<Image, Color>        colourCache = new HashMap<>();
+    public static Map<String, Map<String, String>> localeFiles = new TreeMap<>();
 
     public static Map<String, Exception> failedFiles           = new HashMap<>();
     public static Map<String, Exception> failedPathDirectories = new HashMap<>();
@@ -90,6 +89,7 @@ public class DataCache
                      "\tutil.table.deepcopy = table.deepcopy\n" +
                      "\tutil.multiplystripes = multiplystripes").call();
 
+//        Pattern regex = Pattern.compile("require *\\(?(\"|')(?<module>[^\\.\"']+)(\"|')\\)?");
         Pattern regex = Pattern.compile("require *\\(?(\"|')(?<module>[^\"']+)(\"|')\\)?");
         // TODO see if "." is needed
 
@@ -520,8 +520,9 @@ public class DataCache
     {
         try
         {
-            File file = new File(ForemanFX.class.getClassLoader().getResource("UnknownIcon.png").getFile());
-            unknownIcon = ImageIO.read(file);
+//            File file = new File(ForemanFX.class.getClassLoader().getResource("UnknownIcon.png").getFile());
+//            unknownIcon = ImageIO.read(file);
+            unknownIcon = new Image(ForemanFX.class.getClassLoader().getResource("UnknownIcon.png").openStream());
         }
         catch (Exception e)
         {
@@ -529,7 +530,7 @@ public class DataCache
         }
     }
 
-    private static BufferedImage loadImage(String fileName)
+    private static Image loadImage(String fileName)
     {
         String fullPath = "";
         File file = new File(fileName);
@@ -557,7 +558,8 @@ public class DataCache
         }
         try
         {
-            return ImageIO.read(file);
+//            return ImageIO.read(file);
+            return new Image(file.toURI().toURL().openStream());
         }
         catch (Exception e)
         {

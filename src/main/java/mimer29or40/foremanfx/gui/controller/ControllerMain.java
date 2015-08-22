@@ -3,24 +3,26 @@ package mimer29or40.foremanfx.gui.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.ForemanFX;
 import mimer29or40.foremanfx.Settings;
+import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Language;
 import mimer29or40.foremanfx.util.Util;
 
 import java.io.File;
-import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
-public class ControllerMain implements Initializable
+public class ControllerMain extends ControllerBase
 {
-    private ResourceBundle bundle;
-
     private Settings settings    = ForemanFX.settings;
     private Settings userData    = ForemanFX.userData;
     private String   filterValue = "";
@@ -73,20 +75,18 @@ public class ControllerMain implements Initializable
     private ComboBox<Language> languageSelect;
 
     @FXML
-    private TextField filter;
+    private TextField            filter;
     @FXML
-    private ListView  itemSelector;
+    private ListView<Item>       itemSelector;
+    private ObservableList<Item> unfilteredItemList;
     @FXML
-    private Button    buttonAddItem;
+    private Button               buttonAddItem;
 
     @FXML
     private ScrollPane flowchart;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources)
+    public void init()
     {
-        bundle = resources;
-
         loadConfigValues();
 
         buttonFixed.setOnAction((event) -> {
@@ -132,17 +132,19 @@ public class ControllerMain implements Initializable
                                                                              .getName()));
 
         filter.textProperty().addListener((observable, oldValue, newValue) -> filterValue = newValue);
+//        itemSelector = new ListView<>();
+        loadItemList();
     }
 
-//    private void loadLanguage(ResourceBundle bundle)
-//    {
-//        if (bundle == null)
-//            bundle = ResourceBundle.getBundle("lang.bundle", new Locale("en","US"));
-//
-//        productionHeader.setText(bundle.getString("setProduction"));
-//        buttonFixed.setText(bundle.getString("fixedAmount"));
-//        buttonRate.setText(bundle.getString("rate"));
-//    }
+    private void loadLanguage(ResourceBundle bundle)
+    {
+        if (bundle == null)
+        { bundle = ResourceBundle.getBundle("lang.bundle", new Locale("en", "US")); }
+
+        productionHeader.setText(bundle.getString("setProduction"));
+        buttonFixed.setText(bundle.getString("fixedAmount"));
+        buttonRate.setText(bundle.getString("rate"));
+    }
 
     private void loadConfigValues()
     {
@@ -165,14 +167,43 @@ public class ControllerMain implements Initializable
         languageSelect.setValue(DataCache.languages.get(settings.getProp("language")));
     }
 
+    private void loadItemList()
+    {
+        List<Item> itemList = DataCache.items.keySet().stream().map(DataCache.items::get).collect(Collectors.toList());
+
+        Collections.sort(itemList, (item1, item2) -> item1.getName().compareTo(item2.getName()));
+
+        unfilteredItemList = FXCollections.observableList(itemList);
+
+        itemSelector.setItems(unfilteredItemList);
+
+        itemSelector.setCellFactory((list) -> new ListCell<Item>()
+        {
+            @Override
+            protected void updateItem(Item item, boolean empty)
+            {
+                super.updateItem(item, empty);
+
+                if (item == null || empty)
+                {
+                    setText(null);
+                }
+                else
+                {
+                    setGraphic(new ImageView(item.getIcon()));
+                    setText(item.getName());
+                }
+            }
+        });
+
+        itemSelector.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("ListView Selection Changed (selected: " + newValue.toString() + ")");
+        });
+    }
+
     private void setupRateSelect()
     {
-        ObservableList<String> rateSelectList = FXCollections.observableArrayList();
-
-        rateSelectList.add("minute");
-        rateSelectList.add("second");
-
-        rateSelect.setItems(rateSelectList);
+        rateSelect.setItems(FXCollections.observableArrayList("minute", "second"));
 
         // Define rendering of the list of values in ComboBox drop down.
         rateSelect.setCellFactory((comboBox) -> new ListCell<String>()
@@ -198,8 +229,8 @@ public class ControllerMain implements Initializable
     {
         ObservableList<Language> languageSelectList = FXCollections.observableArrayList();
 
-        for (String key : DataCache.languages.keySet())
-        { languageSelectList.add(DataCache.languages.get(key)); }
+        languageSelectList.addAll(DataCache.languages.keySet().stream().map(DataCache.languages::get)
+                                                     .collect(Collectors.toList()));
 
         languageSelect.setItems(languageSelectList);
 

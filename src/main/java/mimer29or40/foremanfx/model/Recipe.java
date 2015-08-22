@@ -1,8 +1,8 @@
 package mimer29or40.foremanfx.model;
 
+import javafx.scene.image.Image;
 import mimer29or40.foremanfx.DataCache;
 
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 public class Recipe
@@ -13,7 +13,7 @@ public class Recipe
     private Map<Item, Float> results;
     private Map<Item, Float> ingredients;
     public boolean isMissingRecipe = false;
-    private BufferedImage icon;
+    private Image icon;
 
     public Recipe(String name, float time, Map<Item, Float> ingredients, Map<Item, Float> results)
     {
@@ -47,13 +47,13 @@ public class Recipe
         return name;
     }
 
-    public Recipe setIcon(BufferedImage icon)
+    public Recipe setIcon(Image icon)
     {
         this.icon = icon;
         return this;
     }
 
-    public BufferedImage getIcon()
+    public Image getIcon()
     {
         if (icon != null)
         { return icon; }

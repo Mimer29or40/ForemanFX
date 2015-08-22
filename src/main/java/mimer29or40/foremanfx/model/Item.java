@@ -1,8 +1,8 @@
 package mimer29or40.foremanfx.model;
 
+import javafx.scene.image.Image;
 import mimer29or40.foremanfx.DataCache;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,9 +12,9 @@ public class Item
     public static List<String> localeCategories = Arrays.asList("item-name", "fluid-name", "entity-name",
                                                                 "equipment-name");
 
-    private String        name;
-    private List<Recipe>  recipes;
-    private BufferedImage icon;
+    private String       name;
+    private List<Recipe> recipes;
+    private Image        icon;
     public boolean isMissingIcon = false;
 
     private Item()
@@ -22,7 +22,7 @@ public class Item
         name = "";
     }
 
-    public Item(String name, BufferedImage icon)
+    public Item(String name, Image icon)
     {
         this.name = name;
         this.icon = icon;
@@ -61,7 +61,7 @@ public class Item
         return recipes;
     }
 
-    public BufferedImage getIcon()
+    public Image getIcon()
     {
         return icon;
     }

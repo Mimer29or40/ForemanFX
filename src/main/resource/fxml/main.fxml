@@ -130,7 +130,7 @@
                       prefWidth="285.0">
                     <children>
                         <TextField fx:id="filter"/>
-                        <ListView fx:id="itemSelecter" maxHeight="1.7976931348623157E308"
+                        <ListView fx:id="itemSelector" maxHeight="1.7976931348623157E308"
                                   maxWidth="1.7976931348623157E308" prefHeight="250.0" VBox.vgrow="ALWAYS"/>
                         <Button fx:id="buttonAddItem" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"

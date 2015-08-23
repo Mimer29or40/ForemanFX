@@ -39,6 +39,7 @@ public class ForemanFX extends Application
 
         DataCache.loadAllData(null);
 
+
         this.mainStage = primaryStage;
 
         try
@@ -47,7 +48,9 @@ public class ForemanFX extends Application
 //            loader.setResources(ResourceBundle.getBundle("lang.bundle", new Locale("en", "US")));
             Parent root = loader.load(getClass().getResource(GuiFiles.MAIN).openStream());
             primaryStage.setTitle("Foreman FX");
-            primaryStage.setScene(new Scene(root, 1170, 440));
+            Scene scene = new Scene(root, 1170, 440);
+            scene.getStylesheets().add("css/styleSheet.css");
+            primaryStage.setScene(scene);
             primaryStage.setMinWidth(1170);
             primaryStage.setMinHeight(440);
             primaryStage.show();
@@ -56,7 +59,10 @@ public class ForemanFX extends Application
         {
             e.printStackTrace();
         }
+    }
 
+    public static void launchMain()
+    {
 
     }
 

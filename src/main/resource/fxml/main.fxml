@@ -3,14 +3,14 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox fx:id="main" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<VBox fx:id="main" styleClass="backgroundDefault" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="mimer29or40.foremanfx.gui.controller.ControllerMain">
     <children>
         <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
               prefHeight="130.0">
             <children>
                 <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                      spacing="15.0" style="-fx-border-color: black;">
+                      spacing="15.0" styleClass="sub-panelDefault">
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </padding>
@@ -69,7 +69,7 @@
                     </padding>
                 </VBox>
                 <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                      spacing="10.0" style="-fx-border-color: black;">
+                      spacing="10.0" styleClass="sub-panelDefault">
                     <children>
                         <Label fx:id="assemblerHeader" maxHeight="1.7976931348623157E308"
                                maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
@@ -106,7 +106,7 @@
                     </padding>
                 </VBox>
                 <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="150.0"
-                      spacing="10.0" style="-fx-border-color: black;">
+                      spacing="10.0" styleClass="sub-panelDefault">
                     <children>
                         <Label fx:id="languageHeader" maxHeight="1.7976931348623157E308"
                                maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
@@ -123,25 +123,31 @@
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </padding>
         </HBox>
-        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-              minWidth="-Infinity" spacing="5.0" VBox.vgrow="ALWAYS">
-            <children>
-                <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                      prefWidth="285.0">
+        <SplitPane dividerPositions="0.34071340713407133" maxHeight="1.7976931348623157E308"
+                   maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0"
+                   styleClass="backgroundDefault" VBox.vgrow="ALWAYS">
+            <items>
+                <VBox maxHeight="1.7976931348623157E308" maxWidth="400.0" prefWidth="200.0" spacing="5.0"
+                      SplitPane.resizableWithParent="false">
                     <children>
-                        <TextField fx:id="filter"/>
+                        <TextField fx:id="filter" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                                   minHeight="-Infinity" minWidth="-Infinity" styleClass="filterDefault"/>
                         <ListView fx:id="itemSelector" maxHeight="1.7976931348623157E308"
-                                  maxWidth="1.7976931348623157E308" prefHeight="250.0" VBox.vgrow="ALWAYS"/>
+                                  maxWidth="1.7976931348623157E308" styleClass="listViewDefault" VBox.vgrow="ALWAYS"/>
                         <Button fx:id="buttonAddItem" maxHeight="1.7976931348623157E308"
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
                                 mnemonicParsing="false" text="addItem"/>
                     </children>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
                 </VBox>
-                <ScrollPane fx:id="flowchart" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS"/>
-            </children>
-            <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-            </VBox.margin>
-        </HBox>
+                <Region prefHeight="200.0" prefWidth="200.0" styleClass="flowchartDefault">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                </Region>
+            </items>
+        </SplitPane>
     </children>
 </VBox>

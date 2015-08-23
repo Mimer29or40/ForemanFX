@@ -99,10 +99,14 @@ public class ControllerMain extends ControllerBase
         buttonFixed.setOnAction((event) -> {
             settings.setProp("productionType", "fixed");
             rateSelect.setDisable(true);
+            checkDisplayAssembler.setDisable(true);
+            checkDisplayMiner.setDisable((true));
         });
         buttonRate.setOnAction((event) -> {
             settings.setProp("productionType", "rate");
             rateSelect.setDisable(false);
+            checkDisplayAssembler.setDisable(false);
+            checkDisplayMiner.setDisable((false));
         });
         setupRateSelect();
         rateSelect.setOnAction((event) -> settings.setProp("rateType",
@@ -186,11 +190,15 @@ public class ControllerMain extends ControllerBase
         {
             buttonRate.setSelected(true);
             rateSelect.setDisable(false);
+            checkDisplayAssembler.setDisable(false);
+            checkDisplayMiner.setDisable((false));
         }
         else
         {
             buttonFixed.setSelected(true);
             rateSelect.setDisable(true);
+            checkDisplayAssembler.setDisable(true);
+            checkDisplayMiner.setDisable((true));
         }
         rateSelect.setValue(settings.getProp("rateType"));
 

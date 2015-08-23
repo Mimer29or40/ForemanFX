@@ -9,7 +9,7 @@ public class Settings
 {
     private Properties prop;
     private File       file;
-    private String name;
+    private String     name;
 
     public Settings(String name)
     {

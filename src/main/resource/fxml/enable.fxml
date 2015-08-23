@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<HBox styleClass="backgroundDefault" stylesheets="@../css/styleSheet.css" xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <VBox maxHeight="600.0" maxWidth="200.0" minHeight="600.0" minWidth="200.0" prefHeight="600.0" prefWidth="200.0"
+              HBox.hgrow="NEVER">
+            <children>
+                <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      prefHeight="200.0" styleClass="sub-panelDefault">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                    <VBox.margin>
+                        <Insets bottom="5.0"/>
+                    </VBox.margin>
+                    <children>
+                        <Label maxWidth="1.7976931348623157E308" text="Asseblers/Smelter"/>
+                        <ListView styleClass="listViewDefault"/>
+                    </children>
+                </VBox>
+                <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      prefHeight="200.0" styleClass="sub-panelDefault">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                    <VBox.margin>
+                        <Insets bottom="5.0" top="5.0"/>
+                    </VBox.margin>
+                    <children>
+                        <Label maxWidth="1.7976931348623157E308" text="Miners/Pumpjacks"/>
+                        <ListView styleClass="listViewDefault"/>
+                    </children>
+                </VBox>
+                <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      prefHeight="200.0" styleClass="sub-panelDefault">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                    <VBox.margin>
+                        <Insets top="5.0"/>
+                    </VBox.margin>
+                    <children>
+                        <Label maxWidth="1.7976931348623157E308" text="Modules"/>
+                        <ListView styleClass="listViewDefault"/>
+                    </children>
+                </VBox>
+            </children>
+            <HBox.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </HBox.margin>
+        </VBox>
+        <VBox alignment="TOP_CENTER" maxHeight="600.0" maxWidth="200.0" minHeight="600.0" minWidth="200.0"
+              prefHeight="600.0" prefWidth="200.0" styleClass="sub-panelDefault">
+            <HBox.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </HBox.margin>
+            <children>
+                <Label maxWidth="1.7976931348623157E308" text="Mods"/>
+                <ListView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0"
+                          styleClass="listViewDefault"/>
+            </children>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
+        </VBox>
+    </children>
+</HBox>

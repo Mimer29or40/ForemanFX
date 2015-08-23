@@ -1,0 +1,29 @@
+.sub-panelDefault
+{
+    -fx-border-color: grey;
+    -fx-border-radius: 4;
+    -fx-background-color: lightGrey
+}
+
+.backgroundDefault
+{
+    -fx-background-color: lightGrey
+}
+
+.listViewDefault
+{
+    -fx-border-color: black;
+    -fx-border-radius: 2
+}
+
+.flowchartDefault
+{
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-radius: 1
+}
+
+.filterDefault
+{
+    -fx-border-color: black
+}

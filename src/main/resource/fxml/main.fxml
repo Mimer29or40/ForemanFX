@@ -138,16 +138,19 @@
                                 maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
                                 mnemonicParsing="false" text="addItem"/>
                     </children>
-                    <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </padding>
                 </VBox>
-                <Region prefHeight="200.0" prefWidth="200.0" styleClass="flowchartDefault">
-                    <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </padding>
-                </Region>
+                <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="198.0" prefViewportWidth="532.0">
+                    <content>
+                        <Pane fx:id="flowchart" prefHeight="200.0" prefWidth="200.0"/>
+                    </content>
+                </ScrollPane>
             </items>
+            <VBox.margin>
+                <Insets/>
+            </VBox.margin>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
         </SplitPane>
     </children>
 </VBox>

@@ -9,11 +9,18 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.StringConverter;
 import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.ForemanFX;
 import mimer29or40.foremanfx.Settings;
+import mimer29or40.foremanfx.event.CanvasEventHandler;
+import mimer29or40.foremanfx.event.TestCanvas;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Language;
 import mimer29or40.foremanfx.util.Util;
@@ -90,27 +97,29 @@ public class ControllerMain extends ControllerBase
     private Button buttonAddItem;
 
     @FXML
-    private ScrollPane flowchart;
+    private Pane flowchart;
 
     public void init()
     {
         loadConfigValues();
 
-        buttonFixed.setOnAction((event) -> {
-            settings.setProp("productionType", "fixed");
-            rateSelect.setDisable(true);
-            checkDisplayAssembler.setDisable(true);
-            checkDisplayMiner.setDisable((true));
-        });
-        buttonRate.setOnAction((event) -> {
-            settings.setProp("productionType", "rate");
-            rateSelect.setDisable(false);
-            checkDisplayAssembler.setDisable(false);
-            checkDisplayMiner.setDisable((false));
-        });
+        buttonFixed.setOnAction((event) ->
+                                {
+                                    settings.setProp("productionType", "fixed");
+                                    rateSelect.setDisable(true);
+                                    checkDisplayAssembler.setDisable(true);
+                                    checkDisplayMiner.setDisable((true));
+                                });
+        buttonRate.setOnAction((event) ->
+                               {
+                                   settings.setProp("productionType", "rate");
+                                   rateSelect.setDisable(false);
+                                   checkDisplayAssembler.setDisable(false);
+                                   checkDisplayMiner.setDisable((false));
+                               });
         setupRateSelect();
-        rateSelect.setOnAction((event) -> settings.setProp("rateType",
-                                                           rateSelect.getSelectionModel().getSelectedItem()));
+        rateSelect.setOnAction((event) ->
+                                       settings.setProp("rateType", rateSelect.getSelectionModel().getSelectedItem()));
 
         buttonExport.setOnAction((event) ->
                                  {
@@ -130,17 +139,20 @@ public class ControllerMain extends ControllerBase
                                      }
                                  });
 
-        checkDisplayAssembler.setOnAction((event) -> settings.setProp("displayAssemblers",
-                                                                      checkDisplayAssembler.isSelected()));
+        checkDisplayAssembler.setOnAction((event) ->
+                                                  settings.setProp("displayAssemblers",
+                                                                   checkDisplayAssembler.isSelected()));
         checkOneAssembler.setOnAction((event) -> settings.setProp("oneAssembler", checkOneAssembler.isSelected()));
         checkDisplayMiner.setOnAction((event) -> settings.setProp("displayMiner", checkDisplayMiner.isSelected()));
 
-        buttonFactorioDir.setOnAction((event) -> {
+        buttonFactorioDir.setOnAction((event) ->
+                                      {
             File file = Util.directoryChooser("Select Factorio Directory");
             if (file != null)
             { settings.setProp("factorioDir", file.getPath()); }
         });
-//        buttonOpenDir.setOnAction((event) -> { TODO get this to work
+//        buttonOpenDir.setOnAction((event) -> TODO get this to work
+//            {
 //            try
 //            {
 //                Desktop.getDesktop().open(new File(settings.getProp("programDir")));
@@ -156,9 +168,10 @@ public class ControllerMain extends ControllerBase
         buttonReload.setOnAction((event) -> DataCache.loadAllData(null));
 
         setupLanguageSelect();
-        languageSelect.setOnAction((event) -> settings.setProp("language",
-                                                               languageSelect.getSelectionModel().getSelectedItem()
-                                                                             .getName()));
+        languageSelect.setOnAction((event) ->
+                                           settings.setProp("language",
+                                                            languageSelect.getSelectionModel().getSelectedItem()
+                                                                          .getName()));
 
         filter.textProperty().addListener((observable, oldValue, newValue) ->
                                                   filteredList.setPredicate(item ->
@@ -172,6 +185,24 @@ public class ControllerMain extends ControllerBase
                                                                                                 filter);
                                                                             }));
         loadItemList();
+
+        TestCanvas canvas = new TestCanvas();
+
+        Rectangle rect1 = new Rectangle(100, 100);
+        rect1.setTranslateX(450);
+        rect1.setTranslateY(450);
+        rect1.setStroke(Color.BLUE);
+        rect1.setFill(Color.BLUE.deriveColor(1, 1, 1, 0.5));
+
+        canvas.getChildren().add(rect1);
+        flowchart.getChildren().add(canvas);
+
+        CanvasEventHandler canvasEventHandler = new CanvasEventHandler(canvas);
+        flowchart.addEventFilter(MouseEvent.MOUSE_PRESSED, canvasEventHandler.getOnMousePressedEventHandler());
+        flowchart.addEventFilter(MouseEvent.MOUSE_DRAGGED, canvasEventHandler.getOnMouseDraggedEventHandler());
+        flowchart.addEventFilter(ScrollEvent.ANY, canvasEventHandler.getOnScrollEventHandler());
+
+        canvas.addGrid();
     }
 
     private void loadLanguage(ResourceBundle bundle)

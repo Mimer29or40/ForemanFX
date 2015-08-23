@@ -31,12 +31,12 @@ public class DataCache
     public static List<Mod>             mods      = new ArrayList<>();
     public static Map<String, Language> languages = new TreeMap<>();
 
-    public static Map<String, Item>     items     = new HashMap<>();
-    public static Map<String, Recipe>   recipes   = new HashMap<>();
+    public static Map<String, Item>      items      = new HashMap<>();
+    public static Map<String, Recipe>    recipes    = new HashMap<>();
     public static Map<String, Assembler> assemblers = new HashMap<>();
-    public static Map<String, Miner>    miners    = new HashMap<>();
-    public static Map<String, Resource> resources = new HashMap<>();
-    public static Map<String, Module>   modules   = new HashMap<>();
+    public static Map<String, Miner>     miners     = new HashMap<>();
+    public static Map<String, Resource>  resources  = new HashMap<>();
+    public static Map<String, Module>    modules    = new HashMap<>();
 //    public static Map<String, Inserter> inserters = new HashMap<>();
 
     private static final float defaultRecipeTime = 0.5f;
@@ -854,16 +854,16 @@ public class DataCache
             LuaTable ingredientTable = LuaHelper.getTable(ingredientsTable, key);
 
             String name = !LuaHelper.isNull(ingredientTable, "name") ?
-                   LuaHelper.getString(ingredientTable, "name") :
-                   ingredientTable.get(1).checkjstring();
+                          LuaHelper.getString(ingredientTable, "name") :
+                          ingredientTable.get(1).checkjstring();
             float amount = !LuaHelper.isNull(ingredientTable, "amount") ?
-                     LuaHelper.getValue(ingredientTable, "amount").tofloat() :
-                     ingredientTable.get(2).tofloat();
+                           LuaHelper.getValue(ingredientTable, "amount").tofloat() :
+                           ingredientTable.get(2).tofloat();
 
             Item ingredient = findOrCreateUnknownItem(name);
 
             if (!ingredients.containsKey(ingredient))
-                ingredients.put(ingredient, amount);
+            { ingredients.put(ingredient, amount); }
             else
             { ingredients.put(ingredient, ingredients.get(ingredient) + amount); }
         }
@@ -946,11 +946,11 @@ public class DataCache
             for (String key : items.keySet())
             {
                 Item item = items.get(key);
-                writer.println("  Name: " + item.getName());
+                writer.println("  Name: " + item.getLocalizedName());
                 writer.println("  Missing Icon: " + item.isMissingIcon);
                 for (Recipe recipe : item.getRecipes())
                 {
-                    writer.println("    Recipe: " + recipe.getName());
+                    writer.println("    Recipe: " + recipe.getLocalizedName());
                 }
                 writer.println("");
             }
@@ -958,19 +958,19 @@ public class DataCache
             for (String key : recipes.keySet())
             {
                 Recipe recipe = recipes.get(key);
-                writer.println("  Name: " + recipe.getName());
+                writer.println("  Name: " + recipe.getLocalizedName());
                 writer.println("  Time: " + recipe.time);
                 writer.println("  Category: " + recipe.category);
                 writer.println("  Missing Recipe: " + recipe.isMissingRecipe);
                 writer.println("  Ingredients: ");
                 for (Item item : recipe.getIngredients().keySet())
                 {
-                    writer.println("    Item: " + item.getName() + " x" + recipe.getIngredients().get(item));
+                    writer.println("    Item: " + item.getLocalizedName() + " x" + recipe.getIngredients().get(item));
                 }
                 writer.println("  Results: ");
                 for (Item item : recipe.getResults().keySet())
                 {
-                    writer.println("    Item: " + item.getName() + " x" + recipe.getResults().get(item));
+                    writer.println("    Item: " + item.getLocalizedName() + " x" + recipe.getResults().get(item));
                 }
                 writer.println(" ");
             }

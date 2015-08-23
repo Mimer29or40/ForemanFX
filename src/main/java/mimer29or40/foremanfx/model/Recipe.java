@@ -33,7 +33,7 @@ public class Recipe
         return obj instanceof Recipe && obj == this;
     }
 
-    public String getName()
+    public String getLocalizedName()
     {
         if (DataCache.localeFiles.containsKey("recipe-name") && DataCache.localeFiles.get("recipe-name").containsKey(
                 name))
@@ -42,8 +42,13 @@ public class Recipe
         }
         else if (results.size() == 1)
         {
-            return results.keySet().iterator().next().getName();
+            return results.keySet().stream().findFirst().get().getLocalizedName();
         }
+        return name;
+    }
+
+    public String getName()
+    {
         return name;
     }
 

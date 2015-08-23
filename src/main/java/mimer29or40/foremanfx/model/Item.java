@@ -3,11 +3,12 @@ package mimer29or40.foremanfx.model;
 import javafx.scene.image.Image;
 import mimer29or40.foremanfx.DataCache;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Item
+public class Item implements Serializable
 {
     public static List<String> localeCategories = Arrays.asList("item-name", "fluid-name", "entity-name",
                                                                 "equipment-name");
@@ -44,7 +45,7 @@ public class Item
         return obj instanceof Recipe && obj == this;
     }
 
-    public String getName()
+    public String getLocalizedName()
     {
         for (String category : localeCategories)
         {
@@ -53,6 +54,11 @@ public class Item
                 return DataCache.localeFiles.get(category).get(name);
             }
         }
+        return name;
+    }
+
+    public String getName()
+    {
         return name;
     }
 

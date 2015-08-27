@@ -129,7 +129,7 @@ public class NodeElement extends GraphElement
     {
         updateTabOrder();
 
-        
+
     }
 
     private int getIconWidths()

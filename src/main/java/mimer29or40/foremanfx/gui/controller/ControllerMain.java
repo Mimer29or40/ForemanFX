@@ -195,11 +195,11 @@ public class ControllerMain extends ControllerBase
         Item item = DataCache.items.get("speed-module-2");
         Recipe recipe = DataCache.recipes.get("speed-module-2");
 
-        NodeElement element1 = new NodeElement(null, canvas);
+//        NodeElement element1 = new NodeElement(null, canvas);
         RecipeNode node2 = RecipeNode.create(recipe, graph);
         node2.setInput(DataCache.items.get("speed-module-2"));
         node2.setInput(DataCache.items.get("speed-module-3"));
-        node2.setOutputs(DataCache.items.get("speed-module-2"));
+        node2.setOutputs(DataCache.items.get("speed-module-3"));
         node2.setOutputs(DataCache.items.get("speed-module-3"));
         NodeElement element2 = new NodeElement(node2, canvas);
 //        NodeElement element3 = new NodeElement(SupplyNode.create(item, graph), canvas);

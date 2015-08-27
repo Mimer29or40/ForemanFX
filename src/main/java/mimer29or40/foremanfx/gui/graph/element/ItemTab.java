@@ -15,7 +15,10 @@ public class ItemTab extends GraphElement
 
     public Color  fillColor;
     public Color  borderColor;
-    public String textValue;
+
+    private int borderSize = 4;
+
+    public String textValue = "0";
 
     private Item item;
 
@@ -31,7 +34,7 @@ public class ItemTab extends GraphElement
         fillColor = Color.WHITE;
         borderColor = Color.GREY;
         width = 40;
-        height = 56;
+        height = 52;
 
         base = new Rectangle(width, height);
         text = new Text();
@@ -49,20 +52,26 @@ public class ItemTab extends GraphElement
         base.setArcHeight(10);
 
         text.setText(textValue);
+        int fontSize = 10;
+        text.setFont(new Font(fontSize));
+        while (this.text.getLayoutBounds().getWidth() > width)
+        {
+            fontSize -= 0.5;
+            this.text.setFont(new Font(fontSize));
+        }
         text.setTranslateX((width - text.getLayoutBounds().getWidth()) / 2);
-        text.setFont(new Font(10));
 
-        itemIcon.setTranslateX(4);
+        itemIcon.setTranslateX(borderSize);
 
         if (type == LinkType.Output)
         {
-            text.setTranslateY(text.getLayoutBounds().getHeight());
-            itemIcon.setTranslateY(height - 4 - 32);
+            text.setTranslateY(height - borderSize - itemIcon.getLayoutBounds().getHeight() - 5);
+            itemIcon.setTranslateY(height - borderSize - itemIcon.getLayoutBounds().getHeight());
         }
         else
         {
-            text.setTranslateY(height - 4);
-            itemIcon.setTranslateY(4);
+            text.setTranslateY(height - borderSize);
+            itemIcon.setTranslateY(borderSize);
         }
     }
 
@@ -76,6 +85,8 @@ public class ItemTab extends GraphElement
     {
         textValue = text;
         this.text.setText(text);
+        if (this.text.getLayoutBounds().getWidth() > width)
+        { this.text.setFont(new Font(8)); }
         this.text.setTranslateX((width - this.text.getLayoutBounds().getWidth()) / 2);
     }
 

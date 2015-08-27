@@ -13,10 +13,15 @@ public class Language
         this.localName = localName;
     }
 
-    public String getName()
+    public String getLocalName()
     {
         if (!Util.isNullOrWhitespace(localName))
         { return localName; }
+        return name;
+    }
+
+    public String getName()
+    {
         return name;
     }
 

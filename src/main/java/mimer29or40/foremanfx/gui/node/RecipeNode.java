@@ -96,7 +96,7 @@ public class RecipeNode extends ProductionNode
         {
             return (float) Math.ceil(Math.round(
                     amount)); //Subtracting a very small number stops the amount from getting rounded up due to FP
-                    // errors. It's a bit hacky but it works for now.
+            // errors. It's a bit hacky but it works for now.
         }
         else
         {
@@ -122,9 +122,9 @@ public class RecipeNode extends ProductionNode
 //
 //        List<MachinePermutation> allowedPermutation = new ArrayList<>();
 //
-//        for (Assembler assembler : allowedAssemblers)
+//        for (Assembler entity : allowedAssemblers)
 //        {
-//            allowedPermutation.addAll(assembler.getAllPermutations());
+//            allowedPermutation.addAll(entity.getAllPermutations());
 //        }
 //
 //        allowedPermutation.sort((item1, item2) -> Double.compare(item1.getRate(baseRecipe.time),

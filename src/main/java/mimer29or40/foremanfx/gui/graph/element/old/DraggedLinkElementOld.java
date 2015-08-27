@@ -1,16 +1,19 @@
-package mimer29or40.foremanfx.gui.graph.element;
+package mimer29or40.foremanfx.gui.graph.element.old;
 
+import com.sun.javafx.geom.Shape;
 import javafx.geometry.Point2D;
-import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
+import mimer29or40.foremanfx.gui.graph.ProductionGraphPaneOld;
+import mimer29or40.foremanfx.gui.graph.element.DragType;
+import mimer29or40.foremanfx.gui.graph.element.LinkType;
 import mimer29or40.foremanfx.model.Item;
 
-public class DraggedLinkElement extends GraphElement
+public class DraggedLinkElementOld extends GraphElementOld
 {
-    public NodeElement supplierElement;
-    public NodeElement consumerElement;
-    public Item        item;
-    public LinkType    startConnectionType;
-    public DragType    dragType;
+    public NodeElementOld supplierElement;
+    public NodeElementOld consumerElement;
+    public Item           item;
+    public LinkType       startConnectionType;
+    public DragType       dragType;
 
     public Point2D location;
     public int     x;
@@ -19,8 +22,8 @@ public class DraggedLinkElement extends GraphElement
     public int     width;
     public int     height;
 
-    public DraggedLinkElement(ProductionGraphViewer parent, NodeElement startNode, LinkType startConnectionType,
-                              Item item)
+    public DraggedLinkElementOld(ProductionGraphPaneOld parent, NodeElementOld startNode, LinkType startConnectionType,
+                                 Item item)
     {
         super(parent);
         if (startConnectionType == LinkType.Input)
@@ -37,6 +40,12 @@ public class DraggedLinkElement extends GraphElement
 //        {
 //            dragType = DragType.MouseUp;
 //        }
+    }
+
+    @Override
+    public Shape impl_configShape()
+    {
+        return null;
     }
 //
 //    @Override

@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import mimer29or40.foremanfx.event.TestCanvas;
 import mimer29or40.foremanfx.gui.GuiFiles;
 import mimer29or40.foremanfx.util.Util;
 
@@ -55,7 +54,6 @@ public class ForemanFX extends Application
             primaryStage.setMinWidth(1170);
             primaryStage.setMinHeight(440);
             primaryStage.show();
-            TestCanvas canvas = new TestCanvas();
         }
         catch (Exception e)
         {

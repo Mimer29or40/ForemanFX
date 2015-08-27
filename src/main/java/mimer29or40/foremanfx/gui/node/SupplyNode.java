@@ -91,7 +91,8 @@ public class SupplyNode extends ProductionNode
 //        Map<MachinePermutation, Integer> results = new HashMap<>();
 //
 //        Resource defaultResource = DataCache.resources.values().stream()
-//                                              .filter(r -> r.result.equals(suppliedItem.getName())).findAny().get();
+//                                              .filter(r -> r.result.equals(suppliedItem.getLocalName())).findAny()
+// .get();
 //        Resource resource = Iterables.getFirst(DataCache.resources.values(), defaultResource);
 //        if (resource == null)
 //        {

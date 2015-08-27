@@ -11,16 +11,21 @@ import java.util.List;
 public abstract class ProductionEntity
 {
     protected String  name;
-    public    String  localizedName;
+    protected String localizedName;
     public    boolean enabled;
     public    Image   icon;
     public    int     moduleSlots;
     public    float   speed;
 
-    public String getName()
+    public String getLocalizedName()
     {
         if (!Util.isNullOrWhitespace(localizedName))
         { return localizedName; }
+        return name;
+    }
+
+    public String getName()
+    {
         return name;
     }
 

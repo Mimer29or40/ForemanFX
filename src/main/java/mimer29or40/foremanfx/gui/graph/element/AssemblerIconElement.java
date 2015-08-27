@@ -1,93 +1,90 @@
 package mimer29or40.foremanfx.gui.graph.element;
 
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.text.Font;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
+import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 import mimer29or40.foremanfx.model.MachinePermutation;
+import mimer29or40.foremanfx.model.Module;
 
 public class AssemblerIconElement extends GraphElement
 {
-    final int maxFontSize = 14;
+    private final int maxFontSize = 14;
     public  MachinePermutation displayedMachine;
     private int                displayedNumber;
-    private      float         stringWidth = 0F;
-    //    private StringFormatter stringFormat = new StringFormatter();
-    private      TextAlignment alignment   = TextAlignment.CENTER;
-    public final int           iconSize    = 32;
-    private      Font          font        = new Font("GenericSansSerif", 10);
+    private      float stringWidth = 0F;
+    public final int   iconSize    = 32;
 
-    public AssemblerIconElement(MachinePermutation assembler, int displayedNumber, ProductionGraphViewer parent)
+    private Text      text;
+    private ImageView assemblerIcon;
+    private ImageView[] moduleIcons = new ImageView[4];
+
+    public AssemblerIconElement(MachinePermutation assembler, int number, ProductionGraphViewer parent)
     {
         super(parent);
-        this.displayedMachine = assembler;
-        this.displayedNumber = displayedNumber;
-//        centreFormat.Alignment = centreFormat.LineAlignment = StringAlignment.Center;
-    }
+        displayedMachine = assembler;
+        displayedNumber = number;
 
-    private void updateSize()
-    {
-        width = (int) stringWidth + iconSize;
-        height = iconSize;
+        width = 54;
+        height = 40;
+
+        text = new Text();
+        assemblerIcon = new ImageView(assembler.entity.icon != null ? assembler.entity.icon : DataCache.unknownIcon);
+
+        this.getChildren().addAll(text, assemblerIcon);
     }
 
     @Override
-    public void paint(GraphicsContext graphics)
+    public void draw()
     {
-        Point2D iconPoint = new Point2D((width + iconSize + stringWidth) / 2 - iconSize, (height - iconSize) / 2);
 
-        graphics.drawImage(displayedMachine.assembler.icon, iconPoint.getX(), iconPoint.getY(), iconSize, iconSize);
-        graphics.fillText(String.valueOf(displayedNumber), (width - iconSize - stringWidth) / 2 + stringWidth / 2,
-                          height / 2);
+        Point2D iconPoint = new Point2D(width - 36, 4);
+        Point2D textPoint = new Point2D(4, height / 2 + 5);
+
+        setDisplayedNumber(displayedNumber);
+
+        assemblerIcon.setTranslateX(iconPoint.getX());
+        assemblerIcon.setTranslateY(iconPoint.getY());
+
+        text.setTranslateX(textPoint.getX());
+        text.setTranslateY(textPoint.getY());
 
         if (!displayedMachine.modules.isEmpty())
         {
-            int moduleCount = displayedMachine.modules.size();
-            int numModuleRows = (int) Math.ceil(moduleCount / 2d);
-            int moduleSize = Math.min(iconSize / numModuleRows, iconSize / (2 - moduleCount % 2)) - 2;
+            int moduleCount = (int) displayedMachine.modules.stream().filter(m -> m instanceof Module).count();
 
-            int i = 0;
-            int x;
+            int x = (int) iconPoint.getX();
+            int y = (int) iconPoint.getY();
 
             if (moduleCount == 1)
             {
-                x = (int) iconPoint.getX() + (iconSize - moduleSize) / 2;
+                x += 16;
+                y += 16;
             }
-            else
+
+            for (int i = 0; i < moduleCount; i++)
             {
-                x = (int) iconPoint.getX() + (iconSize - moduleSize - moduleSize) / 2;
-            }
-            int y = (int) iconPoint.getY() + (iconSize - (moduleSize * numModuleRows)) / 2;
-            for (int r = 0; r < numModuleRows; r++)
-            {
-                graphics.drawImage(displayedMachine.modules.get(i).getIcon(), x, y + (r * moduleSize), moduleSize,
-                                   moduleSize);
-                i++;
-                if (i < displayedMachine.modules.size() && displayedMachine.modules.get(i) != null)
-                {
-                    graphics.drawImage(displayedMachine.modules.get(i).getIcon(), x + moduleSize, y + (r * moduleSize),
-                                       moduleSize, moduleSize);
-                    i++;
-                }
+                moduleIcons[i] = new ImageView(displayedMachine.modules.get(i).getIcon());
+                this.getChildren().add(moduleIcons[i]);
+                moduleIcons[i].setScaleX(0.5);
+                moduleIcons[i].setScaleY(0.5);
+                moduleIcons[i].setTranslateX(x + 16 * (i % 2) - 8);
+                moduleIcons[i].setTranslateY(y + 16 * Math.floor(i / 2) - 8);
             }
         }
+    }
+
+    @Override
+    public void update()
+    {
+
     }
 
     public void setDisplayedNumber(int number)
     {
         displayedNumber = number;
-        final Text text = new Text(String.valueOf(number));
-        new Scene(new Group(text));
-        text.applyCss();
-        stringWidth = (float) text.getLayoutBounds().getWidth();
-    }
-
-    public int getDisplayedNumber()
-    {
-        return displayedNumber;
+        this.text.setText(String.valueOf(number));
+        this.text.setTranslateX((width - this.text.getLayoutBounds().getWidth()) / 2);
     }
 }

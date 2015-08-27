@@ -233,7 +233,7 @@ public class DataCache
 
                 Language newLang = new Language(dir.getName(), (String) object.get("language-name"));
 
-                languages.put(newLang.getName(), newLang);
+                languages.put(newLang.getLocalName(), newLang);
             }
         }
         Logger.info(languages.size() + " Languages Loaded");
@@ -922,6 +922,7 @@ public class DataCache
             writer.println("modPath = " + modPath);
             writer.println("dataFile = " + dataFile);
             writer.println("modFile = " + modFile);
+            writer.println("Default Recipe Time: " + defaultRecipeTime);
             writer.println("Mods:");
             for (Mod mod : mods)
             {
@@ -947,7 +948,8 @@ public class DataCache
             {
                 Item item = items.get(key);
                 writer.println("  Name: " + item.getLocalizedName());
-                writer.println("  Missing Icon: " + item.isMissingIcon);
+                writer.println("  Unlocalized: " + item.getName());
+                writer.println("  Missing Item: " + item.isMissingItem);
                 for (Recipe recipe : item.getRecipes())
                 {
                     writer.println("    Recipe: " + recipe.getLocalizedName());
@@ -955,9 +957,8 @@ public class DataCache
                 writer.println("");
             }
             writer.println("Recipes:");
-            for (String key : recipes.keySet())
+            for (Recipe recipe : recipes.values())
             {
-                Recipe recipe = recipes.get(key);
                 writer.println("  Name: " + recipe.getLocalizedName());
                 writer.println("  Time: " + recipe.time);
                 writer.println("  Category: " + recipe.category);
@@ -974,7 +975,65 @@ public class DataCache
                 }
                 writer.println(" ");
             }
-            writer.println("Default Recipe Time: " + defaultRecipeTime);
+            writer.println("Assemblers:");
+            for (Assembler assembler : assemblers.values())
+            {
+                writer.println("  Name: " + assembler.getLocalizedName());
+                writer.println("  Unlocalized: " + assembler.getName());
+                writer.println("  Categories:");
+                for (String category : assembler.getCategories())
+                {
+                    writer.println("    " + category);
+                }
+                writer.println("  Allowed Effects:");
+                for (String effect : assembler.getAllowedEffects())
+                {
+                    writer.println("    " + effect);
+                }
+                writer.println("  Permutations:");
+//                for (MachinePermutation permutation : assembler.getAllPermutations())
+//                {
+//                    writer.println("    Rate: " + permutation.getRate(60));
+//                    for (Module module : permutation.modules)
+//                    {
+//                        writer.println("      Name:" + module.getLocalizedName());
+//                        writer.println("      Unlocalized:" + module.getName());
+//                        writer.println("      Speed Bonus:" + module.speedBonus);
+//                    }
+//                }
+                writer.println("  Max Ingredients: " + assembler.maxIngredients);
+                writer.println("  Module Slots: " + assembler.moduleSlots);
+                writer.println("  Speed: " + assembler.speed);
+                writer.println("");
+            }
+            writer.println("Miners:");
+            for (Miner miner : miners.values())
+            {
+                writer.println("  Name: " + miner.getLocalizedName());
+                writer.println("  Unlocalized: " + miner.getName());
+                writer.println("  Mining Power: " + miner.miningPower);
+                writer.println("  Module Slots: " + miner.moduleSlots);
+                writer.println("  Speed: " + miner.speed);
+                writer.println("");
+            }
+            writer.println("Resources:");
+            for (Resource resource : resources.values())
+            {
+                writer.println("  Name: " + resource.name);
+                writer.println("  Results: " + resource.result);
+                writer.println("  Hardness: " + resource.hardness);
+                writer.println("  Category: " + resource.category);
+                writer.println("  Time: " + resource.time);
+                writer.println("");
+            }
+            writer.println("Modules:");
+            for (Module module : modules.values())
+            {
+                writer.println("  Name: " + module.getLocalizedName());
+                writer.println("  Unlocalized: " + module.getName());
+                writer.println("  Speed Bonus: " + module.speedBonus);
+                writer.println("");
+            }
             writer.println("Locales:");
             for (String key : localeFiles.keySet())
             {
@@ -1002,6 +1061,7 @@ public class DataCache
         catch (Exception e)
         {
             Logger.error("Something when wrong... " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

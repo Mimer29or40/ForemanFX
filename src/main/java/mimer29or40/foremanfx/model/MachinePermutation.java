@@ -4,24 +4,24 @@ import java.util.List;
 
 public class MachinePermutation
 {
-    public ProductionEntity assembler;
+    public ProductionEntity entity;
     public List<Module>     modules;
 
     public double getRate(float timeDivisor)
     {
-        float speed = assembler.speed;
+        float speed = entity.speed;
         for (Module module : modules)
         {
-            speed += module.speedBonus * assembler.speed;
+            speed += module.speedBonus * entity.speed;
         }
         if (timeDivisor == 0F)
         { timeDivisor = 1F; }
         return Math.round(1 / timeDivisor * speed);
     }
 
-    public MachinePermutation(ProductionEntity assembler, List<Module> modules)
+    public MachinePermutation(ProductionEntity entity, List<Module> modules)
     {
-        this.assembler = assembler;
+        this.entity = entity;
         this.modules = modules;
     }
 }

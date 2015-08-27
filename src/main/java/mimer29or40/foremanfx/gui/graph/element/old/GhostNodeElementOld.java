@@ -1,10 +1,11 @@
-package mimer29or40.foremanfx.gui.graph.element;
+package mimer29or40.foremanfx.gui.graph.element.old;
 
+import com.sun.javafx.geom.Shape;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import mimer29or40.foremanfx.DataCache;
-import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
+import mimer29or40.foremanfx.gui.graph.ProductionGraphPaneOld;
 import mimer29or40.foremanfx.model.Item;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-public class GhostNodeElement extends GraphElement
+public class GhostNodeElementOld extends GraphElementOld
 {
     public        HashSet<Item> items       = new HashSet<>();
     private final int           iconSize    = 32;
@@ -28,7 +29,7 @@ public class GhostNodeElement extends GraphElement
             new Point2D(35, -35)
                                                                            ));
 
-    public GhostNodeElement(ProductionGraphViewer parent)
+    public GhostNodeElementOld(ProductionGraphPaneOld parent)
     {
         super(parent);
         width = 96;
@@ -59,5 +60,11 @@ public class GhostNodeElement extends GraphElement
             parent.ghostDragElement = null;
         }
         super.dispose();
+    }
+
+    @Override
+    public Shape impl_configShape()
+    {
+        return null;
     }
 }

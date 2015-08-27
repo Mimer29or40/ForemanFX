@@ -12,11 +12,10 @@ public class Item implements Serializable
 {
     public static List<String> localeCategories = Arrays.asList("item-name", "fluid-name", "entity-name",
                                                                 "equipment-name");
-
     private String       name;
     private List<Recipe> recipes;
     private Image        icon;
-    public boolean isMissingIcon = false;
+    public boolean isMissingItem = false;
 
     private Item()
     {

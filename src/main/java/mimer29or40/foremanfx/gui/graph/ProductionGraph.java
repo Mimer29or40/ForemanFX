@@ -1,6 +1,7 @@
 package mimer29or40.foremanfx.gui.graph;
 
 import com.google.common.collect.Iterables;
+import javafx.scene.canvas.Canvas;
 import mimer29or40.foremanfx.gui.node.*;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Recipe;
@@ -9,7 +10,7 @@ import mimer29or40.foremanfx.util.Util;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProductionGraph
+public class ProductionGraph extends Canvas
 {
     public List<ProductionNode> nodes                 = new ArrayList<>();
     public int[][]              pathMatrixCache       = null;
@@ -30,7 +31,9 @@ public class ProductionGraph
     }
 
     public ProductionGraph()
-    {}
+    {
+        super();
+    }
 
     public void invalidateCaches()
     {

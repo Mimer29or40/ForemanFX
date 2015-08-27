@@ -11,18 +11,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.StringConverter;
 import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.ForemanFX;
 import mimer29or40.foremanfx.Settings;
-import mimer29or40.foremanfx.event.CanvasEventHandler;
-import mimer29or40.foremanfx.event.TestCanvas;
+import mimer29or40.foremanfx.gui.graph.ProductionGraph;
+import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
+import mimer29or40.foremanfx.gui.graph.element.NodeElement;
+import mimer29or40.foremanfx.gui.node.RecipeNode;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Language;
+import mimer29or40.foremanfx.model.Recipe;
 import mimer29or40.foremanfx.util.Util;
 
 import javax.imageio.ImageIO;
@@ -97,7 +97,7 @@ public class ControllerMain extends ControllerBase
     private Button buttonAddItem;
 
     @FXML
-    private Pane flowchart;
+    private ScrollPane flowchart;
 
     public void init()
     {
@@ -147,10 +147,10 @@ public class ControllerMain extends ControllerBase
 
         buttonFactorioDir.setOnAction((event) ->
                                       {
-            File file = Util.directoryChooser("Select Factorio Directory");
-            if (file != null)
-            { settings.setProp("factorioDir", file.getPath()); }
-        });
+                                          File file = Util.directoryChooser("Select Factorio Directory");
+                                          if (file != null)
+                                          { settings.setProp("factorioDir", file.getPath()); }
+                                      });
 //        buttonOpenDir.setOnAction((event) -> TODO get this to work
 //            {
 //            try
@@ -171,7 +171,7 @@ public class ControllerMain extends ControllerBase
         languageSelect.setOnAction((event) ->
                                            settings.setProp("language",
                                                             languageSelect.getSelectionModel().getSelectedItem()
-                                                                          .getName()));
+                                                                          .getLocalName()));
 
         filter.textProperty().addListener((observable, oldValue, newValue) ->
                                                   filteredList.setPredicate(item ->
@@ -186,23 +186,33 @@ public class ControllerMain extends ControllerBase
                                                                             }));
         loadItemList();
 
-        TestCanvas canvas = new TestCanvas();
+        ProductionGraphViewer canvas = new ProductionGraphViewer();
+        ProductionGraph graph = new ProductionGraph();
 
-        Rectangle rect1 = new Rectangle(100, 100);
-        rect1.setTranslateX(450);
-        rect1.setTranslateY(450);
-        rect1.setStroke(Color.BLUE);
-        rect1.setFill(Color.BLUE.deriveColor(1, 1, 1, 0.5));
+//        CanvasEventHandler canvasEventHandler = new CanvasEventHandler(canvas);
+//        NodeEventHandler nodeEventHandler = new NodeEventHandler(canvas);
 
-        canvas.getChildren().add(rect1);
-        flowchart.getChildren().add(canvas);
+        Item item = DataCache.items.get("speed-module-2");
+        Recipe recipe = DataCache.recipes.get("speed-module-2");
 
-        CanvasEventHandler canvasEventHandler = new CanvasEventHandler(canvas);
-        flowchart.addEventFilter(MouseEvent.MOUSE_PRESSED, canvasEventHandler.getOnMousePressedEventHandler());
-        flowchart.addEventFilter(MouseEvent.MOUSE_DRAGGED, canvasEventHandler.getOnMouseDraggedEventHandler());
-        flowchart.addEventFilter(ScrollEvent.ANY, canvasEventHandler.getOnScrollEventHandler());
+        NodeElement element1 = new NodeElement(null, canvas);
+        RecipeNode node2 = RecipeNode.create(recipe, graph);
+        node2.setInput(DataCache.items.get("speed-module-2"));
+        node2.setInput(DataCache.items.get("speed-module-3"));
+        node2.setOutputs(DataCache.items.get("speed-module-2"));
+        node2.setOutputs(DataCache.items.get("speed-module-3"));
+        NodeElement element2 = new NodeElement(node2, canvas);
+//        NodeElement element3 = new NodeElement(SupplyNode.create(item, graph), canvas);
+//        NodeElement element4 = new NodeElement(ConsumerNode.create(item, graph), canvas);
+//        ItemTab tab1 = new ItemTab(item, LinkType.Input, canvas);
+//        ItemTab tab2 = new ItemTab(item, LinkType.Output, canvas);
 
-        canvas.addGrid();
+        flowchart.setContent(canvas);
+        canvas.drawElement();
+
+        flowchart.addEventFilter(MouseEvent.MOUSE_PRESSED, canvas.canvasEventHandler.getOnMousePressedEventHandler());
+        flowchart.addEventFilter(MouseEvent.MOUSE_DRAGGED, canvas.canvasEventHandler.getOnMouseDraggedEventHandler());
+        flowchart.addEventFilter(ScrollEvent.ANY, canvas.canvasEventHandler.getOnScrollEventHandler());
     }
 
     private void loadLanguage(ResourceBundle bundle)
@@ -327,7 +337,7 @@ public class ControllerMain extends ControllerBase
                 }
                 else
                 {
-                    setText(lang.getName());
+                    setText(lang.getLocalName());
                 }
             }
         });
@@ -343,7 +353,7 @@ public class ControllerMain extends ControllerBase
                 }
                 else
                 {
-                    return lang.getName();
+                    return lang.getLocalName();
                 }
             }
 

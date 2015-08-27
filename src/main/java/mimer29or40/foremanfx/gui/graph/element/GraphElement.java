@@ -2,60 +2,100 @@ package mimer29or40.foremanfx.gui.graph.element;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseButton;
+import javafx.scene.Group;
 import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 
 import java.util.HashSet;
 
-public abstract class GraphElement
+public abstract class GraphElement extends Group
 {
-    public       HashSet<GraphElement> subElements;
-    public       Point2D               location;
-    public       int                   x;
-    public       int                   y;
-    public       Point2D               size;
-    public       int                   width;
-    public       int                   height;
-    public       Rectangle2D           bounds;
     public final ProductionGraphViewer parent;
+    public HashSet<GraphElement> subElements = new HashSet<>();
+    protected int x;
+    protected int y;
+    protected int width;
+    protected int height;
 
     public GraphElement(ProductionGraphViewer parent)
     {
+        super();
         this.parent = parent;
         this.parent.elements.add(this);
+        this.parent.getChildren().add(this);
     }
 
-    public boolean containsPoint(Point2D point)
-    {
-        return false;
-    }
+    public abstract void draw();
 
-    public void paint(GraphicsContext graphics)
-    {
-        for (GraphElement element : subElements)
-        {
-            graphics.translate(element.x, element.y);
-            element.paint(graphics);
-            graphics.translate(-element.x, -element.y);
-        }
-    }
-
-    public void mouseMoved(Point2D location)
-    {}
-
-    public void mouseDown(Point2D location, MouseButton button)
-    {}
-
-    public void mouseUp(Point2D location, MouseButton button)
-    {}
-
-    public void dragged(Point2D location)
-    {}
+    public abstract void update();
 
     public void dispose()
     {
         parent.elements.remove(this);
-//        parent.invalidate();
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public void setX(int x)
+    {
+        this.x = x;
+        setTranslateX(x);
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public void setY(int y)
+    {
+        this.y = y;
+        setTranslateY(y);
+    }
+
+    public Point2D getLocation()
+    {
+        return new Point2D(x, y);
+    }
+
+    public void setLocation(Point2D point)
+    {
+        setX((int) point.getX());
+        setY((int) point.getY());
+    }
+
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+
+    public int getHeight()
+    {
+        return height;
+    }
+
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+
+    public Rectangle2D getBounds()
+    {
+        return new Rectangle2D(x, y, width, height);
+    }
+
+    public void setBounds(Rectangle2D bounds)
+    {
+        setX((int) bounds.getMinX());
+        setY((int) bounds.getMinY());
+        this.width = (int) bounds.getWidth();
+        this.height = (int) bounds.getHeight();
     }
 }

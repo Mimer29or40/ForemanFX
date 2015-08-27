@@ -12,8 +12,8 @@ public abstract class ProductionNode implements Serializable
     public static final int RoundingDP = 4;
     public    ProductionGraph graph;
     protected String          displayName;
-    protected List<Item>      inputs;
-    protected List<Item>      outputs;
+    protected List<Item>     inputs      = new ArrayList<>();
+    protected List<Item>     outputs     = new ArrayList<>();
     protected List<NodeLink> inputLinks  = new ArrayList<>();
     protected List<NodeLink> outputLinks = new ArrayList<>();
     public    RateType       rateType    = RateType.Auto;
@@ -62,8 +62,8 @@ public abstract class ProductionNode implements Serializable
         float total = 0F;
         for (NodeLink link : inputLinks)
         {
-            if (link.item == item) ;
-            total += link.throughput;
+            if (link.item == item)
+            { total += link.throughput; }
         }
         return (float) Math.round(total);
     }
@@ -73,8 +73,8 @@ public abstract class ProductionNode implements Serializable
         float total = 0F;
         for (NodeLink link : outputLinks)
         {
-            if (link.item == item) ;
-            total += link.throughput;
+            if (link.item == item)
+            { total += link.throughput; }
         }
         return (float) Math.round(total);
     }
@@ -138,9 +138,19 @@ public abstract class ProductionNode implements Serializable
         return inputs;
     }
 
+    public void setInput(Item item)
+    {
+        inputs.add(item);
+    }
+
     public List<Item> getOutputs()
     {
         return outputs;
+    }
+
+    public void setOutputs(Item item)
+    {
+        outputs.add(item);
     }
 
     public List<NodeLink> getInputLinks()
@@ -148,9 +158,19 @@ public abstract class ProductionNode implements Serializable
         return inputLinks;
     }
 
+    public void setInputLinks(NodeLink nodeLink)
+    {
+        inputLinks.add(nodeLink);
+    }
+
     public List<NodeLink> getOutputLinks()
     {
         return outputLinks;
+    }
+
+    public void setOutputLinks(NodeLink nodeLink)
+    {
+        outputLinks.add(nodeLink);
     }
 
     public String getDisplayName()

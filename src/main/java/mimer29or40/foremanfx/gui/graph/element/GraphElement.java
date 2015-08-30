@@ -5,12 +5,13 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class GraphElement extends Group
 {
     public final ProductionGraphViewer parent;
-    public HashSet<GraphElement> subElements = new HashSet<>();
+    public List<GraphElement> subElements = new ArrayList<>();
     protected int x;
     protected int y;
     protected int width;
@@ -24,7 +25,16 @@ public abstract class GraphElement extends Group
         this.parent.getChildren().add(this);
     }
 
-    public abstract void draw();
+    public void setupElements()
+    {
+        for (GraphElement element : subElements)
+        {
+            element.setupElements();
+            this.getChildren().add(element);
+        }
+
+        update();
+    }
 
     public abstract void update();
 

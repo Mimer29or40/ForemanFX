@@ -7,14 +7,17 @@ import mimer29or40.foremanfx.event.CanvasEventHandler;
 import mimer29or40.foremanfx.event.NodeEventHandler;
 import mimer29or40.foremanfx.gui.graph.element.GraphElement;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductionGraphViewer extends StackPane
 {
-    public        HashSet<GraphElement> elements = new HashSet<>();
-    private final DoubleProperty        scale    = new SimpleDoubleProperty(1.0);
+    public        List<GraphElement> elements = new ArrayList<>();
+    private final DoubleProperty     scale    = new SimpleDoubleProperty(1.0);
     public final CanvasEventHandler canvasEventHandler;
     public final NodeEventHandler   nodeEventHandler;
+    public boolean showAssemblers = true;
+    public boolean showMiners     = false;
 
     public ProductionGraphViewer()
     {
@@ -34,8 +37,7 @@ public class ProductionGraphViewer extends StackPane
     {
         for (GraphElement element : elements)
         {
-//            this.getChildren().add(element);
-            element.draw();
+            element.setupElements();
         }
     }
 

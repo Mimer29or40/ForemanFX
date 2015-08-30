@@ -26,8 +26,7 @@ public class CanvasEventHandler
     public EventHandler<MouseEvent> getOnMousePressedEventHandler()
     {
         return (event) ->
-        {
-            // right mouse button => panning
+        { // right mouse button => panning
             if (!event.isSecondaryButtonDown())
             { return; }
 
@@ -42,8 +41,7 @@ public class CanvasEventHandler
     public EventHandler<MouseEvent> getOnMouseDraggedEventHandler()
     {
         return (event) ->
-        {
-            // right mouse button => panning
+        { // right mouse button => panning
             if (!event.isSecondaryButtonDown())
             { return; }
 

@@ -16,12 +16,17 @@ public class MachinePermutation
         }
         if (timeDivisor == 0F)
         { timeDivisor = 1F; }
-        return Math.round(1 / timeDivisor * speed);
+        return 1 / timeDivisor * speed;
     }
 
     public MachinePermutation(ProductionEntity entity, List<Module> modules)
     {
         this.entity = entity;
         this.modules = modules;
+    }
+
+    public String toString()
+    {
+        return String.format("Entity: %s Module: %s", entity.getName(), modules.get(0).getName());
     }
 }

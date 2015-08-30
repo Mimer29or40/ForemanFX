@@ -195,6 +195,7 @@ public class DataCache
 
         Logger.info("Loading Modules...");
         LuaTable moduleTable = LuaHelper.getTable(rawTable, "module");
+        modules.put("none", new Module("none", 0));
         if (!LuaHelper.isNull(moduleTable))
         {
             for (LuaValue key : moduleTable.keys())
@@ -960,6 +961,7 @@ public class DataCache
             for (Recipe recipe : recipes.values())
             {
                 writer.println("  Name: " + recipe.getLocalizedName());
+                writer.println("  Unlocalized: " + recipe.getName());
                 writer.println("  Time: " + recipe.time);
                 writer.println("  Category: " + recipe.category);
                 writer.println("  Missing Recipe: " + recipe.isMissingRecipe);
@@ -991,16 +993,12 @@ public class DataCache
                     writer.println("    " + effect);
                 }
                 writer.println("  Permutations:");
-//                for (MachinePermutation permutation : assembler.getAllPermutations())
-//                {
-//                    writer.println("    Rate: " + permutation.getRate(60));
-//                    for (Module module : permutation.modules)
-//                    {
-//                        writer.println("      Name:" + module.getLocalizedName());
-//                        writer.println("      Unlocalized:" + module.getName());
-//                        writer.println("      Speed Bonus:" + module.speedBonus);
-//                    }
-//                }
+                for (MachinePermutation permutation : assembler.getAllPermutations())
+                {
+                    writer.println("    Rate: " + permutation.getRate(60));
+                    writer.println("      Name: " + permutation.modules.get(0).getLocalizedName() +
+                                   " Speed Bonus: " + permutation.modules.get(0).speedBonus);
+                }
                 writer.println("  Max Ingredients: " + assembler.maxIngredients);
                 writer.println("  Module Slots: " + assembler.moduleSlots);
                 writer.println("  Speed: " + assembler.speed);

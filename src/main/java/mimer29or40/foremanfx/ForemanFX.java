@@ -12,7 +12,7 @@ import java.io.File;
 
 public class ForemanFX extends Application
 {
-    private Stage mainStage;
+    public static Stage mainStage;
 
     public static Settings settings;
     public static Settings userData;

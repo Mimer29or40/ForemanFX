@@ -11,7 +11,7 @@ import java.util.List;
 public abstract class ProductionEntity
 {
     protected String  name;
-    protected String localizedName;
+    protected String  localizedName;
     public    boolean enabled;
     public    Image   icon;
     public    int     moduleSlots;
@@ -39,23 +39,26 @@ public abstract class ProductionEntity
     public List<MachinePermutation> getAllPermutations()
     {
         List<MachinePermutation> permutations = new ArrayList<>();
-        Module[] currentModules = new Module[moduleSlots];
+
+        permutations.add(new MachinePermutation(this, Arrays.asList(DataCache.modules.get("none"))));
 
         if (moduleSlots <= 0)
         {
-            return null;
+            return permutations;
         }
 
-        DataCache.modules.values().stream().filter(m -> m.enabled).forEach(module ->
-                                                                           {
-                                                                               for (int i = 0; i < moduleSlots; i++)
-                                                                               {
-                                                                                   currentModules[i] = module;
-                                                                               }
-                                                                               permutations.add(new MachinePermutation(
-                                                                                       this, Arrays.asList(
-                                                                                       currentModules)));
-                                                                           });
+        for (Module module : DataCache.modules.values())
+        {
+            if (module.enabled)
+            {
+                Module[] currentModules = new Module[moduleSlots];
+                for (int i = 0; i < moduleSlots; i++)
+                {
+                    currentModules[i] = module;
+                }
+                permutations.add(new MachinePermutation(this, Arrays.asList(currentModules)));
+            }
+        }
         return permutations;
     }
 }

@@ -1,12 +1,14 @@
 package mimer29or40.foremanfx.gui.node;
 
+import com.google.common.collect.Iterables;
+import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.gui.graph.ProductionGraph;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.MachinePermutation;
+import mimer29or40.foremanfx.model.Miner;
+import mimer29or40.foremanfx.model.Resource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SupplyNode extends ProductionNode
 {
@@ -88,46 +90,64 @@ public class SupplyNode extends ProductionNode
 
     public Map<MachinePermutation, Integer> getMinimumMiners()
     {
-//        Map<MachinePermutation, Integer> results = new HashMap<>();
-//
-//        Resource defaultResource = DataCache.resources.values().stream()
-//                                              .filter(r -> r.result.equals(suppliedItem.getLocalName())).findAny()
-// .get();
-//        Resource resource = Iterables.getFirst(DataCache.resources.values(), defaultResource);
-//        if (resource == null)
-//        {
-//            return results;
-//        }
-//
-//        Miner[] miners = (Miner[]) DataCache.miners.values().stream()
-//                                    .filter(a -> a.enabled &&
-//                                                 a.resourceCategories.contains(resource.category)).toArray();
-//        List<Miner> allowedMiners = Arrays.asList(miners);
-//
-//        List<MachinePermutation> allowedPermutations = new ArrayList<>();
-//
-//        for (Miner miner : allowedMiners)
-//        {
-//            allowedPermutations.addAll(miner.getAllPermutations());
-//        }
-//
-//        allowedPermutations.sort((item1, item2) -> Double.compare(item1.getRate(resource.time),
-// item2.getRate(resource.time)));
-//
-//        if (allowedMiners.stream().findAny() != null)
-//        {
-//            float requiredRate = getRequiredOutput(suppliedItem);
-//            MachinePermutation defaultPermutation = allowedPermutations.stream()
-//                                               .filter(a -> a.getRate(resource.time) < requiredRate).findAny().get();
-//            MachinePermutation permutationToAdd = Iterables.getLast(allowedPermutations, defaultPermutation);
-//            if (permutationToAdd != null)
-//            {
-//                int numberToAdd = (int) Math.ceil(requiredRate / permutationToAdd.getRate(resource.time));
-//                results.put(permutationToAdd, numberToAdd);
-//            }
-//        }
-//        return results;
-        return null;
+        Map<MachinePermutation, Integer> results = new HashMap<>();
+
+        Resource defaultResource = null;
+        for (Resource resource : DataCache.resources.values())
+        {
+            if (resource.result.equals(suppliedItem.getName()))
+            {
+                defaultResource = resource;
+            }
+        }
+        Resource resource = Iterables.getFirst(DataCache.resources.values(), defaultResource);
+        if (resource == null)
+        {
+            return results;
+        }
+
+        Miner[] miners = new Miner[DataCache.miners.size()];
+        int i = 0;
+        for (Object obj : DataCache.miners.values().stream().toArray())
+        {
+            if (obj instanceof Miner)
+            {
+                Miner miner = (Miner) obj;
+                if (miner.enabled && miner.resourceCategories.contains(resource.category))
+                {
+                    miners[i] = miner;
+                    i++;
+                }
+            }
+        }
+        List<Miner> allowedMiners = Arrays.asList(miners);
+
+        List<MachinePermutation> allowedPermutations = new ArrayList<>();
+
+        for (Miner miner : allowedMiners)
+        {
+            if (miner != null)
+            {
+                allowedPermutations.addAll(miner.getAllPermutations());
+            }
+        }
+
+        allowedPermutations.sort((item1, item2) -> Double.compare(item1.getRate(resource.time), item2.getRate(resource.time)));
+
+        if (allowedMiners.size() <= 0)
+        {
+            float requiredRate = getRequiredOutput(suppliedItem);
+            MachinePermutation defaultPermutation = allowedPermutations.stream()
+                                                                       .filter(a -> a.getRate(resource.time) < requiredRate).findAny().get();
+            MachinePermutation permutationToAdd = Iterables.getLast(allowedPermutations, defaultPermutation);
+            if (permutationToAdd != null)
+            {
+                int numberToAdd = (int) Math.ceil(requiredRate / permutationToAdd.getRate(resource.time));
+                results.put(permutationToAdd, numberToAdd);
+            }
+        }
+        return results;
+//        return null;
     }
 
     @Override
@@ -139,7 +159,7 @@ public class SupplyNode extends ProductionNode
     @Override
     public List<Item> getOutputs()
     {
-        return new ArrayList<>();
+        return new ArrayList<>(Arrays.asList(suppliedItem));
     }
 
     public Item getSuppliedItem()

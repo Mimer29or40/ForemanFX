@@ -19,6 +19,7 @@ import mimer29or40.foremanfx.Settings;
 import mimer29or40.foremanfx.gui.graph.ProductionGraph;
 import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 import mimer29or40.foremanfx.gui.graph.element.NodeElement;
+import mimer29or40.foremanfx.gui.node.ConsumerNode;
 import mimer29or40.foremanfx.gui.node.RecipeNode;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Language;
@@ -38,6 +39,9 @@ public class ControllerMain extends ControllerBase
 {
     private Settings settings = ForemanFX.settings;
     private Settings userData = ForemanFX.userData;
+
+    private ProductionGraph       graph;
+    private ProductionGraphViewer canvas;
 
     @FXML
     private VBox main;
@@ -102,6 +106,9 @@ public class ControllerMain extends ControllerBase
     public void init()
     {
         loadConfigValues();
+
+        canvas = new ProductionGraphViewer();
+        graph = new ProductionGraph();
 
         buttonFixed.setOnAction((event) ->
                                 {
@@ -186,21 +193,22 @@ public class ControllerMain extends ControllerBase
                                                                             }));
         loadItemList();
 
-        ProductionGraphViewer canvas = new ProductionGraphViewer();
-        ProductionGraph graph = new ProductionGraph();
+        buttonAddItem.setOnAction((event) ->
+                                  {
+                                      Item selectedItem = itemSelector.getSelectionModel().selectedItemProperty().get();
+                                      if (selectedItem != null)
+                                      { createNode(selectedItem); }
+                                  });
+
+        // TODO Context Menus for selecting assemblers
 
 //        CanvasEventHandler canvasEventHandler = new CanvasEventHandler(canvas);
 //        NodeEventHandler nodeEventHandler = new NodeEventHandler(canvas);
 
         Item item = DataCache.items.get("speed-module-2");
-        Recipe recipe = DataCache.recipes.get("speed-module-2");
+        Recipe recipe = DataCache.recipes.get("copper-cable");
 
-//        NodeElement element1 = new NodeElement(null, canvas);
         RecipeNode node2 = RecipeNode.create(recipe, graph);
-        node2.setInput(DataCache.items.get("speed-module-2"));
-        node2.setInput(DataCache.items.get("speed-module-3"));
-        node2.setOutputs(DataCache.items.get("speed-module-3"));
-        node2.setOutputs(DataCache.items.get("speed-module-3"));
         NodeElement element2 = new NodeElement(node2, canvas);
 //        NodeElement element3 = new NodeElement(SupplyNode.create(item, graph), canvas);
 //        NodeElement element4 = new NodeElement(ConsumerNode.create(item, graph), canvas);
@@ -213,6 +221,28 @@ public class ControllerMain extends ControllerBase
         flowchart.addEventFilter(MouseEvent.MOUSE_PRESSED, canvas.canvasEventHandler.getOnMousePressedEventHandler());
         flowchart.addEventFilter(MouseEvent.MOUSE_DRAGGED, canvas.canvasEventHandler.getOnMouseDraggedEventHandler());
         flowchart.addEventFilter(ScrollEvent.ANY, canvas.canvasEventHandler.getOnScrollEventHandler());
+    }
+
+    private void createNode(Item selectedItem)
+    {
+        // TODO Menu goes here
+        Item item = DataCache.items.get(selectedItem.getName());
+//        final ContextMenu contextMenu = new ContextMenu();
+//        contextMenu.setOnShowing(e -> System.out.println("showing"));
+//        contextMenu.setOnShown(e -> System.out.println("shown"));
+//
+//        MenuItem item1 = new MenuItem("About");
+//        item1.setOnAction(e -> System.out.println("About"));
+//        MenuItem item2 = new MenuItem("Preferences");
+//        item2.setOnAction(e -> System.out.println("Preferences"));
+//        contextMenu.getItems().addAll(item1, item2);
+//
+//        final TextField textField = new TextField("Type Something");
+//        textField.setContextMenu(contextMenu);
+//        textField.setOnAction(e -> contextMenu.show(textField, Side.BOTTOM, 0, 0));
+//        canvas.getChildren().add(textField);
+        NodeElement element = new NodeElement(ConsumerNode.create(item, graph), canvas);
+        element.setupElements();
     }
 
     private void loadLanguage(ResourceBundle bundle)
@@ -281,13 +311,6 @@ public class ControllerMain extends ControllerBase
                 }
             }
         });
-
-//        itemSelector.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-//                        {
-//                            if (newValue != null)
-//                                System.out.println("ListView Selection Changed (selected: " + newValue.getName() +
-// ")");
-//                        });
     }
 
     private void setupRateSelect()

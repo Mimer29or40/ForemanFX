@@ -13,8 +13,8 @@ public class ItemTab extends GraphElement
 {
     public LinkType type;
 
-    public Color  fillColor;
-    public Color  borderColor;
+    public Color fillColor;
+    public Color borderColor;
 
     private int borderSize = 4;
 
@@ -44,8 +44,9 @@ public class ItemTab extends GraphElement
     }
 
     @Override
-    public void draw()
+    public void setupElements()
     {
+        super.setupElements();
         base.setStroke(borderColor);
         base.setFill(fillColor);
         base.setArcWidth(10);

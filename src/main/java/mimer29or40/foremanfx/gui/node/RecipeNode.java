@@ -1,11 +1,16 @@
 package mimer29or40.foremanfx.gui.node;
 
+import com.google.common.collect.Iterables;
+import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.gui.graph.AmountType;
 import mimer29or40.foremanfx.gui.graph.ProductionGraph;
+import mimer29or40.foremanfx.model.Assembler;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.MachinePermutation;
 import mimer29or40.foremanfx.model.Recipe;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -104,80 +109,151 @@ public class RecipeNode extends ProductionNode
         }
     }
 
+    public Map<MachinePermutation, Integer> getMinimumAssemblersList()
+    {
+        Map<MachinePermutation, Integer> results = new HashMap<>();
+
+//        double requiredRate = 100;
+        double requiredRate = getRateDemandedByOutputs();
+        if (requiredRate == Double.POSITIVE_INFINITY)
+        { return results; }
+        requiredRate = Math.round(requiredRate);
+
+        List<MachinePermutation> allowedPermutation = new ArrayList<>();
+        for (Assembler assembler : DataCache.assemblers.values())
+        {
+            if (assembler.enabled && assembler.getCategories().contains(baseRecipe.category) &&
+                assembler.maxIngredients >= baseRecipe.getIngredients().size())
+            {
+                allowedPermutation.addAll(assembler.getAllPermutations());
+            }
+        }
+
+        allowedPermutation.sort((item1, item2) -> Double.compare(item1.getRate(baseRecipe.time),
+                                                                 item2.getRate(baseRecipe.time)));
+        if (allowedPermutation.isEmpty())
+        { return results; }
+
+        for (MachinePermutation permutation : allowedPermutation)
+        {
+            double totalRateSoFar = 0;
+            while (totalRateSoFar < requiredRate)
+            {
+                double remainingRate = requiredRate - totalRateSoFar;
+
+                MachinePermutation permutationToAdd = permutation;
+
+                if (permutationToAdd != null)
+                {
+                    int numberToAdd;
+                    if (graph.oneAssemblerPerRecipe)
+                    {
+                        numberToAdd = (int) Math.ceil(remainingRate / permutationToAdd.getRate(baseRecipe.time));
+                    }
+                    else
+                    {
+                        numberToAdd = (int) Math.floor(remainingRate / permutationToAdd.getRate(baseRecipe.time));
+                    }
+                    results.put(permutationToAdd, numberToAdd);
+                }
+                else
+                {
+                    permutationToAdd = allowedPermutation.get(0);
+                    int amount = (int) Math.ceil(remainingRate / permutationToAdd.getRate(baseRecipe.time));
+                    if (results.containsKey(permutationToAdd))
+                    {
+                        results.put(permutationToAdd, results.get(permutationToAdd) + amount);
+                    }
+                    else
+                    {
+                        results.put(permutationToAdd, amount);
+                    }
+                }
+                totalRateSoFar = 0;
+//                for (MachinePermutation permutation : results.keySet())
+//                {
+//                    totalRateSoFar += permutation.getRate(baseRecipe.time) * results.get(permutation);
+//                }
+            }
+        }
+
+        return results;
+    }
+
     public Map<MachinePermutation, Integer> getMinimumAssemblers()
     {
-//        Map<MachinePermutation, Integer> results = new HashMap<>();
-//
-//        double requiredRate = getRateDemandedByOutputs();
-//        if (requiredRate == Double.POSITIVE_INFINITY)
-//        {
-//            return results;
-//        }
-//        requiredRate = Math.round(requiredRate);
-//
-//        Assembler[] assemblers = (Assembler[]) DataCache.assemblers.values().stream()
-//                                    .filter(a -> a.enabled && a.getCategories().contains(baseRecipe.category) &&
-//                                                 a.maxIngredients >= baseRecipe.getIngredients().size()).toArray();
-//        List<Assembler> allowedAssemblers = Arrays.asList(assemblers);
-//
-//        List<MachinePermutation> allowedPermutation = new ArrayList<>();
-//
-//        for (Assembler entity : allowedAssemblers)
-//        {
-//            allowedPermutation.addAll(entity.getAllPermutations());
-//        }
-//
-//        allowedPermutation.sort((item1, item2) -> Double.compare(item1.getRate(baseRecipe.time),
-// item2.getRate(baseRecipe.time)));
-//
-//        if (allowedPermutation.stream().findAny() != null)
-//        {
-//            double totalRateSoFar = 0;
-//            while (totalRateSoFar < requiredRate)
-//            {
-//                double remainingRate = requiredRate - totalRateSoFar;
-//
-//                MachinePermutation defaultPermutation = allowedPermutation.stream()
-//                                              .filter(p -> p.getRate(baseRecipe.time) <= remainingRate).findAny()
-// .get();
-//                MachinePermutation permutationToAdd = Iterables.getLast(allowedPermutation, defaultPermutation);
-//
-//                if (permutationToAdd != null)
-//                {
-//                    int numberToAdd;
-//                    if (graph.oneAssemblerPerRecipe)
-//                    {
-//                        numberToAdd = (int) Math.ceil(remainingRate / permutationToAdd.getRate(baseRecipe.time));
-//                    }
-//                    else
-//                    {
-//                        numberToAdd = (int) Math.floor(remainingRate / permutationToAdd.getRate(baseRecipe.time));
-//                    }
-//                    results.put(permutationToAdd, numberToAdd);
-//                }
-//                else
-//                {
-//                    permutationToAdd = Iterables.getFirst(allowedPermutation, defaultPermutation);
-//                    int amount = (int) Math.ceil(remainingRate / permutationToAdd.getRate(baseRecipe.time));
-//                    if (results.containsKey(permutationToAdd))
-//                    {
-//                        results.put(permutationToAdd, results.get(permutationToAdd) + amount);
-//                    }
-//                    else
-//                    {
-//                        results.put(permutationToAdd, amount);
-//                    }
-//                }
-//                totalRateSoFar = 0;
-//                for (MachinePermutation val : results.keySet())
-//                {
-//                    totalRateSoFar += val.getRate(baseRecipe.time) * results.get(val);
-//                }
-//                totalRateSoFar = Math.round(totalRateSoFar);
-//            }
-//        }
-//        return results;
-        return null;
+        Map<MachinePermutation, Integer> results = new HashMap<>();
+
+//        double requiredRate = 100;
+        double requiredRate = getRateDemandedByOutputs();
+        if (requiredRate == Double.POSITIVE_INFINITY)
+        {
+            return results;
+        }
+        requiredRate = Math.round(requiredRate);
+
+        List<MachinePermutation> allowedPermutation = new ArrayList<>();
+        for (Assembler assembler : DataCache.assemblers.values())
+        {
+            if (assembler.enabled && assembler.getCategories().contains(baseRecipe.category) &&
+                assembler.maxIngredients >= baseRecipe.getIngredients().size())
+            {
+                allowedPermutation.addAll(assembler.getAllPermutations());
+            }
+        }
+
+        allowedPermutation.sort((item1, item2) -> Double.compare(item1.getRate(baseRecipe.time), item2.getRate(baseRecipe.time)));
+
+        // TODO this is where the assembler selector logic could go
+
+        if (!allowedPermutation.isEmpty())
+        {
+            double totalRateSoFar = 0;
+            if (requiredRate == 0)
+            {
+                results.put(Iterables.getLast(allowedPermutation), 0);
+                return results;
+            }
+            while (totalRateSoFar < requiredRate)
+            {
+                double remainingRate = requiredRate - totalRateSoFar;
+
+                MachinePermutation permutationToAdd = Iterables.getLast(allowedPermutation);
+
+                if (permutationToAdd != null)
+                {
+                    int numberToAdd;
+                    if (graph.oneAssemblerPerRecipe)
+                    {
+                        numberToAdd = (int) Math.ceil(remainingRate / permutationToAdd.getRate(baseRecipe.time));
+                    }
+                    else
+                    {
+                        numberToAdd = (int) Math.floor(remainingRate / permutationToAdd.getRate(baseRecipe.time));
+                    }
+                    results.put(permutationToAdd, numberToAdd);
+                }
+                else
+                {
+                    permutationToAdd = allowedPermutation.get(0);
+                    int amount = (int) Math.ceil(remainingRate / permutationToAdd.getRate(baseRecipe.time));
+                    if (results.containsKey(permutationToAdd))
+                    {
+                        results.put(permutationToAdd, results.get(permutationToAdd) + amount);
+                    }
+                    else
+                    {
+                        results.put(permutationToAdd, amount);
+                    }
+                }
+                totalRateSoFar = 0;
+                for (MachinePermutation permutation : results.keySet())
+                {
+                    totalRateSoFar += permutation.getRate(baseRecipe.time) * results.get(permutation);
+                }
+            }
+        }
+        return results;
     }
 
     @Override

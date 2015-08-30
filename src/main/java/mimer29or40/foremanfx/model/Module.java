@@ -6,7 +6,6 @@ import mimer29or40.foremanfx.util.Util;
 
 public class Module
 {
-    private Image   icon;
     public  boolean enabled;
     public  float   speedBonus;
     private String  name;
@@ -33,6 +32,11 @@ public class Module
 
     public Image getIcon()
     {
-        return DataCache.items.get(name).getIcon();
+        return DataCache.items.containsKey(name) ? DataCache.items.get(name).getIcon() : DataCache.unknownIcon;
+    }
+
+    public String toString()
+    {
+        return "Module: " + name;
     }
 }

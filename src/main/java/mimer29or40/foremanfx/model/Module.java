@@ -2,7 +2,6 @@ package mimer29or40.foremanfx.model;
 
 import javafx.scene.image.Image;
 import mimer29or40.foremanfx.DataCache;
-import mimer29or40.foremanfx.util.Util;
 
 public class Module
 {
@@ -20,8 +19,10 @@ public class Module
 
     public String getLocalizedName()
     {
-        if (!Util.isNullOrWhitespace(localizedName))
-        { return localizedName; }
+        if (DataCache.localeFiles.containsKey("item-name") && DataCache.localeFiles.get("item-name").containsKey(name))
+        {
+            return DataCache.localeFiles.get("item-name").get(name);
+        }
         return name;
     }
 
@@ -32,7 +33,7 @@ public class Module
 
     public Image getIcon()
     {
-        return DataCache.items.containsKey(name) ? DataCache.items.get(name).getIcon() : DataCache.unknownIcon;
+        return DataCache.items.containsKey(name) ? DataCache.items.get(name).getIcon() : null;
     }
 
     public String toString()

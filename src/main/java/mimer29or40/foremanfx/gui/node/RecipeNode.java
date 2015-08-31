@@ -129,14 +129,17 @@ public class RecipeNode extends ProductionNode
             }
         }
 
-        allowedPermutation.sort((item1, item2) -> Double.compare(item1.getRate(baseRecipe.time),
-                                                                 item2.getRate(baseRecipe.time)));
+        allowedPermutation.sort((item1, item2) -> Double.compare(item1.getRate(baseRecipe.time), item2.getRate(baseRecipe.time)));
         if (allowedPermutation.isEmpty())
         { return results; }
 
         for (MachinePermutation permutation : allowedPermutation)
         {
             double totalRateSoFar = 0;
+            if (requiredRate == 0)
+            {
+                results.put(permutation, 0);
+            }
             while (totalRateSoFar < requiredRate)
             {
                 double remainingRate = requiredRate - totalRateSoFar;
@@ -170,10 +173,10 @@ public class RecipeNode extends ProductionNode
                     }
                 }
                 totalRateSoFar = 0;
-//                for (MachinePermutation permutation : results.keySet())
-//                {
-//                    totalRateSoFar += permutation.getRate(baseRecipe.time) * results.get(permutation);
-//                }
+                for (MachinePermutation perm : results.keySet())
+                {
+                    totalRateSoFar += perm.getRate(baseRecipe.time) * results.get(perm);
+                }
             }
         }
 
@@ -203,8 +206,6 @@ public class RecipeNode extends ProductionNode
         }
 
         allowedPermutation.sort((item1, item2) -> Double.compare(item1.getRate(baseRecipe.time), item2.getRate(baseRecipe.time)));
-
-        // TODO this is where the assembler selector logic could go
 
         if (!allowedPermutation.isEmpty())
         {

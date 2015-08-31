@@ -2,7 +2,6 @@ package mimer29or40.foremanfx.model;
 
 import javafx.scene.image.Image;
 import mimer29or40.foremanfx.DataCache;
-import mimer29or40.foremanfx.util.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +10,6 @@ import java.util.List;
 public abstract class ProductionEntity
 {
     protected String  name;
-    protected String  localizedName;
     public    boolean enabled;
     public    Image   icon;
     public    int     moduleSlots;
@@ -19,8 +17,14 @@ public abstract class ProductionEntity
 
     public String getLocalizedName()
     {
-        if (!Util.isNullOrWhitespace(localizedName))
-        { return localizedName; }
+        List<String> localeCategories = Arrays.asList("item-name", "fluid-name", "entity-name", "equipment-name");
+        for (String category : localeCategories)
+        {
+            if (DataCache.localeFiles.containsKey(category) && DataCache.localeFiles.get(category).containsKey(name))
+            {
+                return DataCache.localeFiles.get(category).get(name);
+            }
+        }
         return name;
     }
 
@@ -40,10 +44,9 @@ public abstract class ProductionEntity
     {
         List<MachinePermutation> permutations = new ArrayList<>();
 
-        permutations.add(new MachinePermutation(this, Arrays.asList(DataCache.modules.get("none"))));
-
         if (moduleSlots <= 0)
         {
+            permutations.add(new MachinePermutation(this, Arrays.asList(DataCache.modules.get("none"))));
             return permutations;
         }
 

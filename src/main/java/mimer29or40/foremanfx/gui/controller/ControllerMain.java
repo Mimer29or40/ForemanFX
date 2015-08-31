@@ -21,6 +21,7 @@ import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 import mimer29or40.foremanfx.gui.graph.element.NodeElement;
 import mimer29or40.foremanfx.gui.node.ConsumerNode;
 import mimer29or40.foremanfx.gui.node.RecipeNode;
+import mimer29or40.foremanfx.gui.node.SupplyNode;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Language;
 import mimer29or40.foremanfx.model.Recipe;
@@ -110,14 +111,14 @@ public class ControllerMain extends ControllerBase
         canvas = new ProductionGraphViewer();
         graph = new ProductionGraph();
 
-        buttonFixed.setOnAction((event) ->
+        buttonFixed.setOnAction(event ->
                                 {
                                     settings.setProp("productionType", "fixed");
                                     rateSelect.setDisable(true);
                                     checkDisplayAssembler.setDisable(true);
                                     checkDisplayMiner.setDisable((true));
                                 });
-        buttonRate.setOnAction((event) ->
+        buttonRate.setOnAction(event ->
                                {
                                    settings.setProp("productionType", "rate");
                                    rateSelect.setDisable(false);
@@ -125,12 +126,11 @@ public class ControllerMain extends ControllerBase
                                    checkDisplayMiner.setDisable((false));
                                });
         setupRateSelect();
-        rateSelect.setOnAction((event) ->
-                                       settings.setProp("rateType", rateSelect.getSelectionModel().getSelectedItem()));
+        rateSelect.setOnAction(event -> settings.setProp("rateType", rateSelect.getSelectionModel().getSelectedItem()));
 
-        buttonExport.setOnAction((event) ->
+        buttonExport.setOnAction(event ->
                                  {
-                                     WritableImage image = flowchart.snapshot(new SnapshotParameters(), null);
+                                     WritableImage image = canvas.snapshot(new SnapshotParameters(), null);
                                      File file = new File("./output.png");
                                      try
                                      {
@@ -146,13 +146,11 @@ public class ControllerMain extends ControllerBase
                                      }
                                  });
 
-        checkDisplayAssembler.setOnAction((event) ->
-                                                  settings.setProp("displayAssemblers",
-                                                                   checkDisplayAssembler.isSelected()));
-        checkOneAssembler.setOnAction((event) -> settings.setProp("oneAssembler", checkOneAssembler.isSelected()));
-        checkDisplayMiner.setOnAction((event) -> settings.setProp("displayMiner", checkDisplayMiner.isSelected()));
+        checkDisplayAssembler.setOnAction(event -> settings.setProp("displayAssemblers", checkDisplayAssembler.isSelected()));
+        checkOneAssembler.setOnAction(event -> settings.setProp("oneAssembler", checkOneAssembler.isSelected()));
+        checkDisplayMiner.setOnAction(event -> settings.setProp("displayMiner", checkDisplayMiner.isSelected()));
 
-        buttonFactorioDir.setOnAction((event) ->
+        buttonFactorioDir.setOnAction(event ->
                                       {
                                           File file = Util.directoryChooser("Select Factorio Directory");
                                           if (file != null)
@@ -172,10 +170,10 @@ public class ControllerMain extends ControllerBase
 //            if (file != null)
 //            { settings.setProp("modDir", file.getPath()); }
 //        });
-        buttonReload.setOnAction((event) -> DataCache.loadAllData(null));
+        buttonReload.setOnAction(event -> DataCache.loadAllData(null));
 
         setupLanguageSelect();
-        languageSelect.setOnAction((event) ->
+        languageSelect.setOnAction(event ->
                                            settings.setProp("language",
                                                             languageSelect.getSelectionModel().getSelectedItem()
                                                                           .getLocalName()));
@@ -183,17 +181,14 @@ public class ControllerMain extends ControllerBase
         filter.textProperty().addListener((observable, oldValue, newValue) ->
                                                   filteredList.setPredicate(item ->
                                                                             {
-                                                                                if (newValue == null || newValue
-                                                                                        .isEmpty())
+                                                                                if (newValue == null || newValue.isEmpty())
                                                                                 { return true; }
                                                                                 String filter = newValue.toLowerCase();
-                                                                                return item.getLocalizedName()
-                                                                                           .toLowerCase().contains(
-                                                                                                filter);
+                                                                                return item.getLocalizedName().toLowerCase().contains(filter);
                                                                             }));
         loadItemList();
 
-        buttonAddItem.setOnAction((event) ->
+        buttonAddItem.setOnAction(event ->
                                   {
                                       Item selectedItem = itemSelector.getSelectionModel().selectedItemProperty().get();
                                       if (selectedItem != null)
@@ -202,18 +197,18 @@ public class ControllerMain extends ControllerBase
 
         // TODO Context Menus for selecting assemblers
 
-//        CanvasEventHandler canvasEventHandler = new CanvasEventHandler(canvas);
-//        NodeEventHandler nodeEventHandler = new NodeEventHandler(canvas);
-
         Item item = DataCache.items.get("speed-module-2");
         Recipe recipe = DataCache.recipes.get("copper-cable");
+        Recipe recipe1 = DataCache.recipes.get("speed-module");
+        Recipe recipe2 = DataCache.recipes.get("speed-module-2");
+        Recipe recipe3 = DataCache.recipes.get("speed-module-3");
 
-        RecipeNode node2 = RecipeNode.create(recipe, graph);
-        NodeElement element2 = new NodeElement(node2, canvas);
-//        NodeElement element3 = new NodeElement(SupplyNode.create(item, graph), canvas);
-//        NodeElement element4 = new NodeElement(ConsumerNode.create(item, graph), canvas);
-//        ItemTab tab1 = new ItemTab(item, LinkType.Input, canvas);
-//        ItemTab tab2 = new ItemTab(item, LinkType.Output, canvas);
+        NodeElement element2 = new NodeElement(RecipeNode.create(recipe, graph), canvas);
+        NodeElement element5 = new NodeElement(RecipeNode.create(recipe1, graph), canvas);
+        NodeElement element6 = new NodeElement(RecipeNode.create(recipe2, graph), canvas);
+        NodeElement element7 = new NodeElement(RecipeNode.create(recipe3, graph), canvas);
+        NodeElement element3 = new NodeElement(SupplyNode.create(item, graph), canvas);
+        NodeElement element4 = new NodeElement(ConsumerNode.create(item, graph), canvas);
 
         flowchart.setContent(canvas);
         canvas.drawElement();
@@ -341,8 +336,7 @@ public class ControllerMain extends ControllerBase
     {
         ObservableList<Language> languageSelectList = FXCollections.observableArrayList();
 
-        languageSelectList.addAll(DataCache.languages.keySet().stream().map(DataCache.languages::get)
-                                                     .collect(Collectors.toList()));
+        languageSelectList.addAll(DataCache.languages.keySet().stream().map(DataCache.languages::get).collect(Collectors.toList()));
 
         languageSelect.setItems(languageSelectList);
 
@@ -384,7 +378,6 @@ public class ControllerMain extends ControllerBase
             public Language fromString(String langString)
             {
                 return null;
-//                return new Language(langString);
             }
         });
     }

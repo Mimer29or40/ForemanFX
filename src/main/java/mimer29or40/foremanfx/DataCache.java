@@ -195,7 +195,7 @@ public class DataCache
 
         Logger.info("Loading Modules...");
         LuaTable moduleTable = LuaHelper.getTable(rawTable, "module");
-        modules.put("none", new Module("none", 0));
+        modules.put("none", new Module("None", 0));
         if (!LuaHelper.isNull(moduleTable))
         {
             for (LuaValue key : moduleTable.keys())

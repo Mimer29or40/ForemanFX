@@ -3,24 +3,16 @@ package mimer29or40.foremanfx.model;
 import javafx.scene.image.Image;
 import mimer29or40.foremanfx.DataCache;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Item implements Serializable
+public class Item
 {
-    public static List<String> localeCategories = Arrays.asList("item-name", "fluid-name", "entity-name",
-                                                                "equipment-name");
     private String       name;
     private List<Recipe> recipes;
     private Image        icon;
     public boolean isMissingItem = false;
-
-    private Item()
-    {
-        name = "";
-    }
 
     public Item(String name, Image icon)
     {
@@ -46,6 +38,7 @@ public class Item implements Serializable
 
     public String getLocalizedName()
     {
+        List<String> localeCategories = Arrays.asList("item-name", "fluid-name", "entity-name", "equipment-name");
         for (String category : localeCategories)
         {
             if (DataCache.localeFiles.containsKey(category) && DataCache.localeFiles.get(category).containsKey(name))
@@ -68,7 +61,7 @@ public class Item implements Serializable
 
     public Image getIcon()
     {
-        return icon;
+        return icon != null ? icon : DataCache.unknownIcon;
     }
 
     public void addRecipe(Recipe recipe)

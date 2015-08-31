@@ -123,7 +123,7 @@ public class NodeElement extends GraphElement
                 height = 120;
                 if (displayedNode instanceof RecipeNode)
                 {
-                    assemblerInfoElement.assemblerList = ((RecipeNode) displayedNode).getMinimumAssemblers();
+                    assemblerInfoElement.assemblerList = ((RecipeNode) displayedNode).getMinimumAssemblersList();
                 }
                 else if (displayedNode instanceof SupplyNode)
                 {
@@ -131,9 +131,9 @@ public class NodeElement extends GraphElement
                 }
                 assemblerInfoElement.update();
                 width = Math.max(width, assemblerInfoElement.width + 20);
-                height = assemblerInfoElement.height + 80;
-                assemblerInfoElement.setX((width - assemblerInfoElement.width) / 2 + 2);
-                assemblerInfoElement.setY((height - assemblerInfoElement.height) / 2 + 2);
+                height = assemblerInfoElement.height + 60;
+                assemblerInfoElement.setX((width - assemblerInfoElement.width) / 2);
+                assemblerInfoElement.setY((height - assemblerInfoElement.height) / 2 - 1);
             }
             else
             {

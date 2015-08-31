@@ -9,7 +9,6 @@ import javafx.scene.text.Text;
 import mimer29or40.foremanfx.DataCache;
 import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 import mimer29or40.foremanfx.model.MachinePermutation;
-import mimer29or40.foremanfx.model.Module;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,6 @@ import java.util.Map;
 public class AssemblerInfoElement extends GraphElement
 {
     public Map<MachinePermutation, Integer> assemblerList;
-    public MachinePermutation               selectedMachine;
 
     public MachinePermutation displayedMachine;
     public int                displayedNumber;
@@ -42,20 +40,26 @@ public class AssemblerInfoElement extends GraphElement
 
         text = new Text();
         assemblerIcon = new ImageView();
-        moduleIcons = new ImageView[4];
-
         this.getChildren().addAll(text, assemblerIcon);
+
+        moduleIcons = new ImageView[4];
+        for (int i = 0; i < moduleIcons.length; i++)
+        {
+            moduleIcons[i] = new ImageView(DataCache.unknownIcon);
+            this.getChildren().add(moduleIcons[i]);
+            moduleIcons[i].setScaleX(0.5);
+            moduleIcons[i].setScaleY(0.5);
+        }
 
         assemblerList = new HashMap<>();
 
-        setOnMousePressed(event -> openContextMenu(event));
+//        setOnMouseReleased(this::openContextMenu);
+        setEventHandler(MouseEvent.MOUSE_RELEASED, this::openContextMenu);
     }
 
     @Override
     public void setupElements()
     {
-        super.setupElements();
-
         Point2D iconPoint = new Point2D(width - 36, 4);
         Point2D textPoint = new Point2D(4, height / 2 + 5);
 
@@ -69,90 +73,48 @@ public class AssemblerInfoElement extends GraphElement
 
         if (!displayedMachine.modules.isEmpty())
         {
-            int moduleCount = (int) displayedMachine.modules.stream().filter(m -> m instanceof Module).count();
+            int moduleCount = displayedMachine.modules.size();
 
             int x = (int) iconPoint.getX();
             int y = (int) iconPoint.getY();
 
             if (moduleCount == 1)
             {
-                x += 16;
-                y += 16;
+                x += 8;
+                y += 8;
             }
 
             for (int i = 0; i < moduleCount; i++)
             {
-                moduleIcons[i] = new ImageView(displayedMachine.modules.get(i).getIcon());
-                this.getChildren().add(moduleIcons[i]);
-                moduleIcons[i].setScaleX(0.5);
-                moduleIcons[i].setScaleY(0.5);
                 moduleIcons[i].setTranslateX(x + 16 * (i % 2) - 8);
                 moduleIcons[i].setTranslateY(y + 16 * Math.floor(i / 2) - 8);
             }
         }
+        super.setupElements();
     }
 
     @Override
     public void update()
     {
-//        if (assemblerList != null)
-//        {
-//            for (MachinePermutation key : assemblerList.keySet())
-//            {
-////                if (subElements.stream().filter(e -> ((AssemblerInfoElement) e).displayedMachine != key).findAny().get() != null)
-//                    if (!subElements.isEmpty())
-//                    {
-//                        for (GraphElement obj : subElements)
-//                        {
-//                            if (obj instanceof AssemblerInfoElement)
-//                            {
-//                                AssemblerInfoElement element = (AssemblerInfoElement) obj;
-//                                if (element.displayedMachine != key)
-//                                {
-//                                    subElements.add(new AssemblerInfoElement(key, assemblerList.get(key), parent));
-//                                }
-//                            }
-//                        }
-//                    }
-//                    else
-//                    {
-//                        subElements.add(new AssemblerInfoElement(key, assemblerList.get(key), parent));
-//                    }
-//            }
-//        }
+        text.setText(String.valueOf(displayedNumber));
+        assemblerIcon.setImage(displayedMachine.entity.icon);
 
-        int y = (int) (height / Math.ceil(assemblerList.size() / 2));
-        int widthOver2 = this.width / 2;
-
-        int i = 0;
-        for (GraphElement obj : subElements)
+        if (!displayedMachine.modules.isEmpty())
         {
-            if (obj instanceof AssemblerInfoElement)
+            int moduleX = (int) assemblerIcon.getBoundsInParent().getMinX();
+            int moduleY = (int) assemblerIcon.getBoundsInParent().getMinY();
+
+            if (displayedMachine.modules.size() == 1)
             {
-                AssemblerInfoElement element = (AssemblerInfoElement) obj;
+                moduleX += 8;
+                moduleY += 8;
+            }
 
-                element.setDisplayedNumber(assemblerList.get(element.displayedMachine));
-
-                if (i % 2 == 0)
-                {
-                    element.setX(widthOver2 - element.width);
-                }
-                else
-                {
-                    element.setX(widthOver2);
-                }
-                element.setY((int) Math.floor(i / 2d) * y);
-
-                if (assemblerList.size() == 1)
-                {
-                    element.setX((width - element.width) / 2);
-                }
-                else if (i == assemblerList.size() - 1 && assemblerList.size() % 2 != 0)
-                {
-                    element.setX(widthOver2 - (element.width / 2));
-                }
-
-                i++;
+            for (int i = 0; i < moduleIcons.length; i++)
+            {
+                moduleIcons[i].setImage(displayedMachine.modules.get(0).getIcon());
+                moduleIcons[i].setTranslateX(moduleX + 16 * (i % 2) - 8);
+                moduleIcons[i].setTranslateY(moduleY + 16 * Math.floor(i / 2) - 8);
             }
         }
     }
@@ -167,18 +129,31 @@ public class AssemblerInfoElement extends GraphElement
     public void setDisplayedMachine(MachinePermutation permutation)
     {
         this.displayedMachine = permutation;
+        this.assemblerIcon.setImage(this.displayedMachine.entity.icon);
     }
 
     public void openContextMenu(MouseEvent event)
     {
-        event.consume();
+        if (event.isStillSincePress())
+        {
+            final ContextMenu contextMenu = new ContextMenu();
+            contextMenu.setAutoHide(true);
 
-        final ContextMenu contextMenu = new ContextMenu();
-        MenuItem cut = new MenuItem("Cut");
-        MenuItem copy = new MenuItem("Copy");
-        MenuItem paste = new MenuItem("Paste");
-        contextMenu.getItems().addAll(cut, copy, paste);
+            for (MachinePermutation permutation : assemblerList.keySet())
+            {
+                MenuItem item = new MenuItem(permutation.entity.getLocalizedName() + " with " + permutation.modules.get(0).getLocalizedName());
+                item.setOnAction(event1 -> changeAssembler(permutation, assemblerList.get(permutation)));
+                contextMenu.getItems().add(item);
+            }
 
-        contextMenu.show(parent, event.getScreenX(), event.getScreenY());
+            contextMenu.show(parent.getScene().getWindow(), event.getScreenX(), event.getScreenY());
+        }
+    }
+
+    public void changeAssembler(MachinePermutation permutation, int number)
+    {
+        this.displayedMachine = permutation;
+        this.displayedNumber = number;
+        update();
     }
 }

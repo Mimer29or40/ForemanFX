@@ -41,6 +41,8 @@ public class ItemTab extends GraphElement
         itemIcon = new ImageView(item.getIcon() != null ? item.getIcon() : DataCache.unknownIcon);
 
         this.getChildren().addAll(base, text, itemIcon);
+
+//        setEventHandler(MouseEvent.MOUSE_DRAGGED, new LinkElement(parent));
     }
 
     @Override
@@ -55,23 +57,23 @@ public class ItemTab extends GraphElement
         text.setText(textValue);
         int fontSize = 10;
         text.setFont(new Font(fontSize));
-        while (this.text.getLayoutBounds().getWidth() > width)
+        while (this.text.getLayoutBounds().getWidth() > getWidth())
         {
             fontSize -= 0.5;
             this.text.setFont(new Font(fontSize));
         }
-        text.setTranslateX((width - text.getLayoutBounds().getWidth()) / 2);
+        text.setTranslateX((getWidth() - text.getLayoutBounds().getWidth()) / 2);
 
         itemIcon.setTranslateX(borderSize);
 
         if (type == LinkType.Output)
         {
-            text.setTranslateY(height - borderSize - itemIcon.getLayoutBounds().getHeight() - 5);
-            itemIcon.setTranslateY(height - borderSize - itemIcon.getLayoutBounds().getHeight());
+            text.setTranslateY(getHeight() - borderSize - itemIcon.getLayoutBounds().getHeight() - 5);
+            itemIcon.setTranslateY(getHeight() - borderSize - itemIcon.getLayoutBounds().getHeight());
         }
         else
         {
-            text.setTranslateY(height - borderSize);
+            text.setTranslateY(getHeight() - borderSize);
             itemIcon.setTranslateY(borderSize);
         }
     }
@@ -86,9 +88,9 @@ public class ItemTab extends GraphElement
     {
         textValue = text;
         this.text.setText(text);
-        if (this.text.getLayoutBounds().getWidth() > width)
+        if (this.text.getLayoutBounds().getWidth() > getWidth())
         { this.text.setFont(new Font(8)); }
-        this.text.setTranslateX((width - this.text.getLayoutBounds().getWidth()) / 2);
+        this.text.setTranslateX((getWidth() - this.text.getLayoutBounds().getWidth()) / 2);
     }
 
     public void setBackground(Color color)

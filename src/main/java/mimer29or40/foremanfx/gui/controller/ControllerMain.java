@@ -20,11 +20,8 @@ import mimer29or40.foremanfx.gui.graph.ProductionGraph;
 import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 import mimer29or40.foremanfx.gui.graph.element.NodeElement;
 import mimer29or40.foremanfx.gui.node.ConsumerNode;
-import mimer29or40.foremanfx.gui.node.RecipeNode;
-import mimer29or40.foremanfx.gui.node.SupplyNode;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Language;
-import mimer29or40.foremanfx.model.Recipe;
 import mimer29or40.foremanfx.util.Util;
 
 import javax.imageio.ImageIO;
@@ -198,17 +195,21 @@ public class ControllerMain extends ControllerBase
         // TODO Context Menus for selecting assemblers
 
         Item item = DataCache.items.get("speed-module-2");
-        Recipe recipe = DataCache.recipes.get("copper-cable");
-        Recipe recipe1 = DataCache.recipes.get("speed-module");
-        Recipe recipe2 = DataCache.recipes.get("speed-module-2");
-        Recipe recipe3 = DataCache.recipes.get("speed-module-3");
+//        Recipe recipe = DataCache.recipes.get("copper-cable");
+//        Recipe recipe1 = DataCache.recipes.get("speed-module");
+//        Recipe recipe2 = DataCache.recipes.get("speed-module-2");
+//        Recipe recipe3 = DataCache.recipes.get("speed-module-3");
 
-        NodeElement element2 = new NodeElement(RecipeNode.create(recipe, graph), canvas);
-        NodeElement element5 = new NodeElement(RecipeNode.create(recipe1, graph), canvas);
-        NodeElement element6 = new NodeElement(RecipeNode.create(recipe2, graph), canvas);
-        NodeElement element7 = new NodeElement(RecipeNode.create(recipe3, graph), canvas);
-        NodeElement element3 = new NodeElement(SupplyNode.create(item, graph), canvas);
+//        NodeElement element2 = new NodeElement(RecipeNode.create(recipe, graph), canvas);
+//        NodeElement element5 = new NodeElement(RecipeNode.create(recipe1, graph), canvas);
+//        NodeElement element6 = new NodeElement(RecipeNode.create(recipe2, graph), canvas);
+//        NodeElement element7 = new NodeElement(RecipeNode.create(recipe3, graph), canvas);
+//        NodeElement element3 = new NodeElement(SupplyNode.create(item, graph), canvas);
         NodeElement element4 = new NodeElement(ConsumerNode.create(item, graph), canvas);
+
+//        DraggedLinkElement element8 = new DraggedLinkElement(canvas, element3, LinkType.Output, item);
+//        element8.setX(50);
+//        element8.setY(50);
 
         flowchart.setContent(canvas);
         canvas.drawElement();
@@ -216,6 +217,13 @@ public class ControllerMain extends ControllerBase
         flowchart.addEventFilter(MouseEvent.MOUSE_PRESSED, canvas.canvasEventHandler.getOnMousePressedEventHandler());
         flowchart.addEventFilter(MouseEvent.MOUSE_DRAGGED, canvas.canvasEventHandler.getOnMouseDraggedEventHandler());
         flowchart.addEventFilter(ScrollEvent.ANY, canvas.canvasEventHandler.getOnScrollEventHandler());
+//        flowchart.setOnMousePressed(canvas.canvasEventHandler.getOnMousePressedEventHandler());
+//        flowchart.setOnMouseDragged(canvas.canvasEventHandler.getOnMouseDraggedEventHandler());
+//        flowchart.setOnScroll(canvas.canvasEventHandler.getOnScrollEventHandler());
+//        flowchart.addEventHandler(MouseEvent.MOUSE_PRESSED, canvas.canvasEventHandler.getOnMousePressedEventHandler());
+//        flowchart.addEventHandler(MouseEvent.MOUSE_DRAGGED, canvas.canvasEventHandler.getOnMouseDraggedEventHandler());
+//        flowchart.addEventHandler(ScrollEvent.ANY, canvas.canvasEventHandler.getOnScrollEventHandler());
+
     }
 
     private void createNode(Item selectedItem)

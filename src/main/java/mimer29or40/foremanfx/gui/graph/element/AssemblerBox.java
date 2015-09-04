@@ -54,8 +54,8 @@ public class AssemblerBox extends GraphElement
             }
         }
 
-        int y = (int) (height / Math.ceil(assemblerList.size() / 2));
-        int widthOver2 = this.width / 2;
+        int y = (int) (getHeight() / Math.ceil(assemblerList.size() / 2));
+        int widthOver2 = this.getWidth() / 2;
 
         int i = 0;
         for (GraphElement obj : subElements)
@@ -68,7 +68,7 @@ public class AssemblerBox extends GraphElement
 
                 if (i % 2 == 0)
                 {
-                    element.setX(widthOver2 - element.width);
+                    element.setX(widthOver2 - element.getWidth());
                 }
                 else
                 {
@@ -78,11 +78,11 @@ public class AssemblerBox extends GraphElement
 
                 if (assemblerList.size() == 1)
                 {
-                    element.setX((width - element.width) / 2);
+                    element.setX((getWidth() - element.getWidth()) / 2);
                 }
                 else if (i == assemblerList.size() - 1 && assemblerList.size() % 2 != 0)
                 {
-                    element.setX(widthOver2 - (element.width / 2));
+                    element.setX(widthOver2 - (element.getWidth() / 2));
                 }
 
                 i++;

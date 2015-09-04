@@ -1,6 +1,7 @@
 package mimer29or40.foremanfx.gui.graph.element;
 
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
@@ -53,15 +54,14 @@ public class AssemblerInfoElement extends GraphElement
 
         assemblerList = new HashMap<>();
 
-//        setOnMouseReleased(this::openContextMenu);
         setEventHandler(MouseEvent.MOUSE_RELEASED, this::openContextMenu);
     }
 
     @Override
     public void setupElements()
     {
-        Point2D iconPoint = new Point2D(width - 36, 4);
-        Point2D textPoint = new Point2D(4, height / 2 + 5);
+        Point2D iconPoint = new Point2D(getWidth() - 36, 4);
+        Point2D textPoint = new Point2D(4, getHeight() / 2 + 5);
 
         assemblerIcon.setImage(displayedMachine.entity.icon != null ? displayedMachine.entity.icon : DataCache.unknownIcon);
         assemblerIcon.setTranslateX(iconPoint.getX());
@@ -123,7 +123,7 @@ public class AssemblerInfoElement extends GraphElement
     {
         displayedNumber = number;
         this.text.setText(String.valueOf(number));
-        this.text.setTranslateX((width - this.text.getLayoutBounds().getWidth()) / 2);
+        this.text.setTranslateX((getWidth() - this.text.getLayoutBounds().getWidth()) / 2);
     }
 
     public void setDisplayedMachine(MachinePermutation permutation)
@@ -142,7 +142,11 @@ public class AssemblerInfoElement extends GraphElement
             for (MachinePermutation permutation : assemblerList.keySet())
             {
                 MenuItem item = new MenuItem(permutation.entity.getLocalizedName() + " with " + permutation.modules.get(0).getLocalizedName());
-                item.setOnAction(event1 -> changeAssembler(permutation, assemblerList.get(permutation)));
+                item.setOnAction(event1 ->
+                                 {
+                                     changeAssembler(permutation, assemblerList.get(permutation));
+                                     parent.getScene().setCursor(Cursor.DEFAULT);
+                                 });
                 contextMenu.getItems().add(item);
             }
 

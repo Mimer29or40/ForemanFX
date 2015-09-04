@@ -1,5 +1,6 @@
 package mimer29or40.foremanfx.gui.graph.element;
 
+import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -28,7 +29,6 @@ public class NodeElement extends GraphElement
     private final int    assemblerBorderY = 30;
     private final int    tabPadding       = 8;
     public        String textValue        = "";
-    private AssemblerBox         assemblerBox;
     private AssemblerInfoElement assemblerInfoElement;
     private List<ItemTab> inputTabs      = new ArrayList<>();
     private List<ItemTab> outputTabs     = new ArrayList<>();
@@ -78,13 +78,31 @@ public class NodeElement extends GraphElement
             ItemTab newTab = new ItemTab(item, LinkType.Input, parent);
             subElements.add(newTab);
             inputTabs.add(newTab);
+//            newTab.setOnMousePressed(event ->
+//                                     {
+//                                         newTab.setX((int) event.getX());
+//                                         newTab.setY((int) event.getY());
+//                                     });
+            newTab.setOnMouseDragged(event ->
+                                     {
+                                         DraggedLinkElement newLink = new DraggedLinkElement(parent, this, newTab.type, newTab.getItem());
+                                         newLink.curveX = (int) event.getSceneX();
+                                         newLink.curveY = (int) event.getSceneY();
+                                         subElements.add(newLink);
+                                         if (newTab.type == LinkType.Input)
+                                         {
+                                             newLink.consumerElement = this;
+                                         }
+                                         else
+                                         {
+                                             newLink.supplierElement = this;
+                                         }
+                                         newLink.update();
+                                     });
         }
 
         if (displayedNode instanceof RecipeNode || displayedNode instanceof SupplyNode)
         {
-//            assemblerBox = new AssemblerBox(parent);
-//            subElements.add(assemblerBox);
-//            assemblerBox.height = assemblerBox.width = 50;
             assemblerInfoElement = new AssemblerInfoElement(new MachinePermutation(DataCache.assemblers.get("assembling-machine-1"),
                                                                                    Arrays.asList(DataCache.modules.get("none"))), 0, parent);
             subElements.add(assemblerInfoElement);
@@ -94,8 +112,11 @@ public class NodeElement extends GraphElement
         text = new Text();
         this.getChildren().addAll(background, text);
 
-        this.addEventFilter(MouseEvent.MOUSE_PRESSED, parent.nodeEventHandler.getOnMousePressedEventHandler());
-        this.addEventFilter(MouseEvent.MOUSE_DRAGGED, parent.nodeEventHandler.getOnMouseDraggedEventHandler());
+        this.addEventFilter(MouseEvent.MOUSE_PRESSED, parent.nodeEventHandler.getOnMousePressed());
+//        this.addEventFilter(MouseEvent.MOUSE_DRAGGED, parent.nodeEventHandler.getOnMouseDragged());
+        this.addEventFilter(MouseEvent.MOUSE_RELEASED, parent.nodeEventHandler.getOnMouseReleased());
+        this.addEventFilter(MouseEvent.MOUSE_ENTERED, parent.nodeEventHandler.getOnMouseEntered());
+        this.addEventFilter(MouseEvent.MOUSE_EXITED, parent.nodeEventHandler.getOnMouseExited());
     }
 
     @Override
@@ -112,8 +133,8 @@ public class NodeElement extends GraphElement
         width = Math.max(Math.max(75, getIconWidths()), (int) text.getLayoutBounds().getWidth() + 8);
         height = 80;
 
-        text.setTranslateX((width - this.text.getLayoutBounds().getWidth()) / 2);
-        text.setTranslateY(height / 2 + 3);
+        text.setTranslateX((getWidth() - this.text.getLayoutBounds().getWidth()) / 2);
+        text.setTranslateY(getHeight() / 2 + 3);
 
         if (assemblerInfoElement != null)
         {
@@ -130,15 +151,15 @@ public class NodeElement extends GraphElement
                     assemblerInfoElement.assemblerList = ((SupplyNode) displayedNode).getMinimumMiners();
                 }
                 assemblerInfoElement.update();
-                width = Math.max(width, assemblerInfoElement.width + 20);
-                height = assemblerInfoElement.height + 60;
-                assemblerInfoElement.setX((width - assemblerInfoElement.width) / 2);
-                assemblerInfoElement.setY((height - assemblerInfoElement.height) / 2 - 1);
+                width = Math.max(getWidth(), assemblerInfoElement.getWidth() + 20);
+                height = assemblerInfoElement.getHeight() + 60;
+                assemblerInfoElement.setX((getWidth() - assemblerInfoElement.getWidth()) / 2);
+                assemblerInfoElement.setY((getHeight() - assemblerInfoElement.getHeight()) / 2 - 1);
             }
             else
             {
                 assemblerInfoElement.setVisible(false);
-                width = Math.max(100, width);
+                width = Math.max(100, getWidth());
                 height = 90;
             }
         }
@@ -211,41 +232,7 @@ public class NodeElement extends GraphElement
 
         int minWidth = (int) text.getLayoutBounds().getWidth();
 
-        width = Math.max(75, getIconWidths());
-        width = Math.max(width, minWidth);
-
-        if (assemblerBox != null)
-        {
-            if ((displayedNode instanceof RecipeNode && parent.showAssemblers) ||
-                (displayedNode instanceof SupplyNode && parent.showMiners))
-            {
-                height = 120;
-                if (displayedNode instanceof RecipeNode)
-                {
-                    assemblerBox.assemblerList = ((RecipeNode) displayedNode).getMinimumAssemblers();
-                }
-                else if (displayedNode instanceof SupplyNode)
-                {
-                    assemblerBox.assemblerList = ((SupplyNode) displayedNode).getMinimumMiners();
-                }
-                assemblerBox.update();
-                width = Math.max(width, assemblerBox.width + 20);
-                height = assemblerBox.height + 80;
-                assemblerBox.setX((width - assemblerBox.width) / 2 + 2);
-                assemblerBox.setY((height - assemblerBox.height) / 2 + 2);
-            }
-            else
-            {
-                assemblerBox.assemblerList.clear();
-                width = Math.max(100, width);
-                height = 90;
-                assemblerBox.update();
-            }
-        }
-        else
-        {
-            height = 90;
-        }
+        width = Math.max(minWidth, Math.max(75, getIconWidths()));
 
 //        for (ItemTab tab : Util.union(inputTabs, outputTabs))
 //        {
@@ -266,7 +253,7 @@ public class NodeElement extends GraphElement
         int result = tabPadding;
         for (ItemTab tab : inputTabs)
         {
-            result += tab.width + tabPadding;
+            result += tab.getWidth() + tabPadding;
         }
         return result;
     }
@@ -276,7 +263,7 @@ public class NodeElement extends GraphElement
         int result = tabPadding;
         for (ItemTab tab : outputTabs)
         {
-            result += tab.width + tabPadding;
+            result += tab.getWidth() + tabPadding;
         }
         return result;
     }
@@ -286,21 +273,21 @@ public class NodeElement extends GraphElement
 //        inputTabs = inputTabs.sort(it -> getItemTabXHeuristic(it)).ToList();
 //        outputTabs = outputTabs.sort(it -> getItemTabXHeuristic(it)).ToList();
 
-        int x = (width - getOutputIconWidths()) / 2;
+        int x = (getWidth() - getOutputIconWidths()) / 2;
         for (ItemTab tab : outputTabs)
         {
             x += tabPadding;
             tab.setTranslateX(x);
-            tab.setTranslateY(-tab.height / 2);
-            x += tab.width;
+            tab.setTranslateY(-tab.getHeight() / 2);
+            x += tab.getWidth();
         }
-        x = (width - getInputIconWidths()) / 2;
+        x = (getWidth() - getInputIconWidths()) / 2;
         for (ItemTab tab : inputTabs)
         {
             x += tabPadding;
             tab.setTranslateX(x);
-            tab.setTranslateY(height - tab.height / 2);
-            x += tab.width;
+            tab.setTranslateY(getHeight() - tab.getHeight() / 2);
+            x += tab.getWidth();
         }
     }
 
@@ -333,5 +320,41 @@ public class NodeElement extends GraphElement
                 return enough;
             }
         }
+    }
+
+    public Point2D getOutputLineConnectionPoint(Item item)
+    {
+        if (outputTabs.isEmpty())
+        {
+            return new Point2D(getX() + getWidth() / 2, getY());
+        }
+        ItemTab itemTab = null;
+        for (ItemTab tab : outputTabs)
+        {
+            if (tab.getItem() == item)
+            {
+                itemTab = tab;
+                break;
+            }
+        }
+        return new Point2D(getX() + itemTab.getX() + itemTab.getWidth() / 2, getY() + itemTab.getY());
+    }
+
+    public Point2D getInputLineConnectionPoint(Item item)
+    {
+        if (inputTabs.isEmpty())
+        {
+            return new Point2D(getX() + getWidth() / 2, getY() + getHeight());
+        }
+        ItemTab itemTab = null;
+        for (ItemTab tab : inputTabs)
+        {
+            if (tab.getItem() == item)
+            {
+                itemTab = tab;
+                break;
+            }
+        }
+        return new Point2D(getX() + itemTab.getX() + itemTab.getWidth() / 2, getY() + itemTab.getY() + itemTab.getHeight());
     }
 }

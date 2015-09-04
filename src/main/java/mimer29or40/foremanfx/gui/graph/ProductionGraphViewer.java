@@ -6,6 +6,8 @@ import javafx.scene.layout.StackPane;
 import mimer29or40.foremanfx.event.CanvasEventHandler;
 import mimer29or40.foremanfx.event.NodeEventHandler;
 import mimer29or40.foremanfx.gui.graph.element.GraphElement;
+import mimer29or40.foremanfx.gui.graph.element.NodeElement;
+import mimer29or40.foremanfx.gui.node.ProductionNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,5 +57,22 @@ public class ProductionGraphViewer extends StackPane
     {
         setTranslateX(getTranslateX() - x);
         setTranslateY(getTranslateY() - y);
+    }
+
+    public NodeElement getElementForNode(ProductionNode node)
+    {
+        NodeElement result = null;
+        for (GraphElement gElement : elements)
+        {
+            if (gElement instanceof NodeElement)
+            {
+                NodeElement element = (NodeElement) gElement;
+                if (element.displayedNode == node)
+                {
+                    return element;
+                }
+            }
+        }
+        return result;
     }
 }

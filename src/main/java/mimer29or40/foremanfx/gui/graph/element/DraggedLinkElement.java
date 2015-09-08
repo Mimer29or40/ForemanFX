@@ -5,7 +5,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
 import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 import mimer29or40.foremanfx.model.Item;
-import mimer29or40.foremanfx.util.Logger;
 
 public class DraggedLinkElement extends GraphElement
 {
@@ -70,20 +69,20 @@ public class DraggedLinkElement extends GraphElement
         {
             pointM = consumerElement.getInputLineConnectionPoint(item);
         }
-        Point2D pointN2 = new Point2D(pointN.getX(), pointN.getY() - Math.max((int) ((pointN.getY() - pointM.getY()) / 2), 40));
-        Point2D pointM2 = new Point2D(pointM.getX(), pointM.getY() + Math.max((int) ((pointN.getY() - pointM.getY()) / 2), 40));
+//        Point2D pointN2 = new Point2D(pointN.getX(), pointN.getY() - Math.max((int) ((pointN.getY() - pointM.getY()) / 2), 40));
+//        Point2D pointM2 = new Point2D(pointM.getX(), pointM.getY() + Math.max((int) ((pointN.getY() - pointM.getY()) / 2), 40));
 
-        curve.setStartX(pointN.getX());
-        curve.setStartY(pointN.getY());
+        curve.setStartX(getX() + pointN.getX());
+        curve.setStartY(getY() + pointN.getY());
 
-        curve.setControlX1(pointN2.getX());
-        curve.setControlY1(pointN2.getY());
+//        curve.setControlX1(pointN2.getX());
+//        curve.setControlY1(pointN2.getY());
+//
+//        curve.setControlX2(pointM2.getX());
+//        curve.setControlY2(pointM2.getY());
 
-        curve.setControlX2(pointM2.getX());
-        curve.setControlY2(pointM2.getY());
-
-        curve.setEndX(pointM.getX());
-        curve.setEndY(pointM.getY());
-        Logger.debug("(%s,%s) (%s,%s)", pointN.getX(), pointN.getY(), pointM.getX(), pointM.getY());
+        curve.setEndX(getX() + pointM.getX());
+        curve.setEndY(getY() + pointM.getY());
+//        Logger.debug("(%s,%s) (%s,%s)", pointN.getX(), pointN.getY(), pointM.getX(), pointM.getY());
     }
 }

@@ -14,10 +14,6 @@ public abstract class GraphElement extends Group
 {
     public final ProductionGraphViewer parent;
     public    List<GraphElement> subElements = new ArrayList<>();
-    //    protected int x;
-//    protected int y;
-//    protected int width;
-//    protected int height;
     protected IntegerProperty    x           = new SimpleIntegerProperty(this, "x");
     protected IntegerProperty    y           = new SimpleIntegerProperty(this, "x");
     protected IntegerProperty    width       = new SimpleIntegerProperty(this, "x");
@@ -44,9 +40,17 @@ public abstract class GraphElement extends Group
 
     public abstract void update();
 
-    public void dispose() // TODO Proper node removing
+    public void dispose()
     {
         parent.elements.remove(this);
+        for (int i = subElements.size() - 1; i >= 0; i--)
+        {
+            subElements.remove(i);
+        }
+        for (int i = getChildren().size() - 1; i >= 0; i--)
+        {
+            getChildren().remove(i);
+        }
     }
 
     public int getX()

@@ -1,6 +1,6 @@
 package mimer29or40.foremanfx.model;
 
-import mimer29or40.foremanfx.util.Util;
+import mimer29or40.foremanfx.util.StringUtil;
 
 public class Language
 {
@@ -15,7 +15,7 @@ public class Language
 
     public String getLocalName()
     {
-        if (!Util.isNullOrWhitespace(localName))
+        if (!StringUtil.isNullOrWhitespace(localName))
         { return localName; }
         return name;
     }

@@ -1,5 +1,7 @@
 package mimer29or40.foremanfx.gui.graph.element;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -13,12 +15,14 @@ public class ItemTab extends GraphElement
 {
     public LinkType type;
 
+    public DraggedLinkElement draggedLinkElement;
+
     public Color fillColor;
     public Color borderColor;
 
     private int borderSize = 4;
 
-    public String textValue = "0";
+    public StringProperty textValue = new SimpleStringProperty(this, "text", "0");
 
     private Item item;
 
@@ -33,28 +37,29 @@ public class ItemTab extends GraphElement
         this.type = type;
         fillColor = Color.WHITE;
         borderColor = Color.GREY;
-        width = 40;
-        height = 52;
+        width.set(40);
+        height.set(52);
 
-        base = new Rectangle(width, height);
+        base = new Rectangle();
         text = new Text();
         itemIcon = new ImageView(item.getIcon() != null ? item.getIcon() : DataCache.unknownIcon);
 
         this.getChildren().addAll(base, text, itemIcon);
-
-//        setEventHandler(MouseEvent.MOUSE_DRAGGED, new LinkElement(parent));
     }
 
     @Override
     public void setupElements()
     {
         super.setupElements();
+        base.widthProperty().bind(width);
+        base.heightProperty().bind(height);
         base.setStroke(borderColor);
         base.setFill(fillColor);
         base.setArcWidth(10);
         base.setArcHeight(10);
 
-        text.setText(textValue);
+        text.textProperty().bind(textValue);
+
         int fontSize = 10;
         text.setFont(new Font(fontSize));
         while (this.text.getLayoutBounds().getWidth() > getWidth())
@@ -62,8 +67,8 @@ public class ItemTab extends GraphElement
             fontSize -= 0.5;
             this.text.setFont(new Font(fontSize));
         }
-        text.setTranslateX((getWidth() - text.getLayoutBounds().getWidth()) / 2);
 
+        text.setTranslateX((getWidth() - text.getLayoutBounds().getWidth()) / 2);
         itemIcon.setTranslateX(borderSize);
 
         if (type == LinkType.Output)
@@ -86,8 +91,7 @@ public class ItemTab extends GraphElement
 
     public void setText(String text)
     {
-        textValue = text;
-        this.text.setText(text);
+        textValue.set(text);
         if (this.text.getLayoutBounds().getWidth() > getWidth())
         { this.text.setFont(new Font(8)); }
         this.text.setTranslateX((getWidth() - this.text.getLayoutBounds().getWidth()) / 2);

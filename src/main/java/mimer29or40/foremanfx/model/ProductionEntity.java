@@ -46,7 +46,7 @@ public abstract class ProductionEntity
 
         if (moduleSlots <= 0)
         {
-            permutations.add(new MachinePermutation(this, Arrays.asList(DataCache.modules.get("none"))));
+            permutations.add(new MachinePermutation(this, DataCache.modules.get("none")));
             return permutations;
         }
 
@@ -59,7 +59,7 @@ public abstract class ProductionEntity
                 {
                     currentModules[i] = module;
                 }
-                permutations.add(new MachinePermutation(this, Arrays.asList(currentModules)));
+                permutations.add(new MachinePermutation(this, currentModules));
             }
         }
         return permutations;

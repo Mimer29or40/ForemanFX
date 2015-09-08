@@ -4,7 +4,7 @@ import mimer29or40.foremanfx.model.MissingPrototypeValueException;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
-public class LuaHelper
+public class LuaUtil
 {
     public static String getType(LuaValue value)
     {
@@ -91,7 +91,6 @@ public class LuaHelper
 
     public static LuaValue getValue(LuaTable table, LuaValue key)
     {
-        LuaValue value = table.get(key);
         return table.get(key);
     }
 

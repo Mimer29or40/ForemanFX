@@ -6,17 +6,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import mimer29or40.foremanfx.DataCache;
+import mimer29or40.foremanfx.event.DragContext;
 import mimer29or40.foremanfx.gui.graph.ProductionGraphViewer;
 import mimer29or40.foremanfx.gui.node.ConsumerNode;
 import mimer29or40.foremanfx.gui.node.ProductionNode;
 import mimer29or40.foremanfx.gui.node.RecipeNode;
 import mimer29or40.foremanfx.gui.node.SupplyNode;
 import mimer29or40.foremanfx.model.Item;
-import mimer29or40.foremanfx.model.MachinePermutation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class NodeElement extends GraphElement
@@ -78,33 +76,50 @@ public class NodeElement extends GraphElement
             ItemTab newTab = new ItemTab(item, LinkType.Input, parent);
             subElements.add(newTab);
             inputTabs.add(newTab);
-//            newTab.setOnMousePressed(event ->
-//                                     {
-//                                         newTab.setX((int) event.getX());
-//                                         newTab.setY((int) event.getY());
-//                                     });
-            newTab.setOnMouseDragged(event ->
+
+            DragContext context = new DragContext();
+
+            newTab.setOnMousePressed(event ->
                                      {
-                                         DraggedLinkElement newLink = new DraggedLinkElement(parent, this, newTab.type, newTab.getItem());
-                                         newLink.curveX = (int) event.getSceneX();
-                                         newLink.curveY = (int) event.getSceneY();
-                                         subElements.add(newLink);
+                                         event.consume();
+
+                                         newTab.draggedLinkElement = new DraggedLinkElement(parent, this, newTab.type, newTab.getItem());
+
+                                         context.mouseAnchorX = event.getSceneX() + getTranslateX();
+                                         context.mouseAnchorY = event.getSceneY() + getTranslateY();
+
                                          if (newTab.type == LinkType.Input)
                                          {
-                                             newLink.consumerElement = this;
+                                             newTab.draggedLinkElement.consumerElement = this;
                                          }
                                          else
                                          {
-                                             newLink.supplierElement = this;
+                                             newTab.draggedLinkElement.supplierElement = this;
                                          }
-                                         newLink.update();
+                                         newTab.draggedLinkElement.update();
                                      });
+            newTab.setOnMouseDragged(event ->
+                                     {
+                                         event.consume();
+
+//                                         newTab.draggedLinkElement.setX((int) event.getX());
+//                                         newTab.draggedLinkElement.setY((int) event.getY());
+
+                                         newTab.draggedLinkElement.curveX = (int) event.getSceneX() - (int) context.mouseAnchorX;
+                                         newTab.draggedLinkElement.curveY = (int) event.getSceneY() - (int) context.mouseAnchorY;
+
+                                         newTab.draggedLinkElement.update();
+                                     });
+            newTab.setOnMouseReleased(event ->
+                                      {
+                                          event.consume();
+                                          newTab.draggedLinkElement.dispose();
+                                      });
         }
 
         if (displayedNode instanceof RecipeNode || displayedNode instanceof SupplyNode)
         {
-            assemblerInfoElement = new AssemblerInfoElement(new MachinePermutation(DataCache.assemblers.get("assembling-machine-1"),
-                                                                                   Arrays.asList(DataCache.modules.get("none"))), 0, parent);
+            assemblerInfoElement = new AssemblerInfoElement(parent);
             subElements.add(assemblerInfoElement);
         }
 
@@ -112,11 +127,11 @@ public class NodeElement extends GraphElement
         text = new Text();
         this.getChildren().addAll(background, text);
 
-        this.addEventFilter(MouseEvent.MOUSE_PRESSED, parent.nodeEventHandler.getOnMousePressed());
-//        this.addEventFilter(MouseEvent.MOUSE_DRAGGED, parent.nodeEventHandler.getOnMouseDragged());
-        this.addEventFilter(MouseEvent.MOUSE_RELEASED, parent.nodeEventHandler.getOnMouseReleased());
-        this.addEventFilter(MouseEvent.MOUSE_ENTERED, parent.nodeEventHandler.getOnMouseEntered());
-        this.addEventFilter(MouseEvent.MOUSE_EXITED, parent.nodeEventHandler.getOnMouseExited());
+        this.addEventHandler(MouseEvent.MOUSE_PRESSED, parent.nodeEventHandler.getOnMousePressed());
+        this.addEventHandler(MouseEvent.MOUSE_DRAGGED, parent.nodeEventHandler.getOnMouseDragged());
+        this.addEventHandler(MouseEvent.MOUSE_RELEASED, parent.nodeEventHandler.getOnMouseReleased());
+        this.addEventHandler(MouseEvent.MOUSE_ENTERED, parent.nodeEventHandler.getOnMouseEntered());
+        this.addEventHandler(MouseEvent.MOUSE_EXITED, parent.nodeEventHandler.getOnMouseExited());
     }
 
     @Override
@@ -130,8 +145,8 @@ public class NodeElement extends GraphElement
 
         text.setText(textValue);
 
-        width = Math.max(Math.max(75, getIconWidths()), (int) text.getLayoutBounds().getWidth() + 8);
-        height = 80;
+        width.set(Math.max(Math.max(75, getIconWidths()), (int) text.getLayoutBounds().getWidth() + 8));
+        height.set(80);
 
         text.setTranslateX((getWidth() - this.text.getLayoutBounds().getWidth()) / 2);
         text.setTranslateY(getHeight() / 2 + 3);
@@ -141,7 +156,7 @@ public class NodeElement extends GraphElement
             if ((displayedNode instanceof RecipeNode && parent.showAssemblers) ||
                 (displayedNode instanceof SupplyNode && parent.showMiners))
             {
-                height = 120;
+                height.set(120);
                 if (displayedNode instanceof RecipeNode)
                 {
                     assemblerInfoElement.assemblerList = ((RecipeNode) displayedNode).getMinimumAssemblersList();
@@ -151,25 +166,25 @@ public class NodeElement extends GraphElement
                     assemblerInfoElement.assemblerList = ((SupplyNode) displayedNode).getMinimumMiners();
                 }
                 assemblerInfoElement.update();
-                width = Math.max(getWidth(), assemblerInfoElement.getWidth() + 20);
-                height = assemblerInfoElement.getHeight() + 60;
+                width.set(Math.max(getWidth(), assemblerInfoElement.getWidth() + 20));
+                height.set(assemblerInfoElement.getHeight() + 60);
                 assemblerInfoElement.setX((getWidth() - assemblerInfoElement.getWidth()) / 2);
                 assemblerInfoElement.setY((getHeight() - assemblerInfoElement.getHeight()) / 2 - 1);
             }
             else
             {
                 assemblerInfoElement.setVisible(false);
-                width = Math.max(100, getWidth());
-                height = 90;
+                width.set(Math.max(100, getWidth()));
+                height.set(90);
             }
         }
         else
         {
-            height = 90;
+            height.set(90);
         }
 
-        background.setWidth(width);
-        background.setHeight(height);
+        background.widthProperty().bind(width);
+        background.heightProperty().bind(height);
 
         updateTabOrder();
     }
@@ -232,7 +247,7 @@ public class NodeElement extends GraphElement
 
         int minWidth = (int) text.getLayoutBounds().getWidth();
 
-        width = Math.max(minWidth, Math.max(75, getIconWidths()));
+        width.set(Math.max(minWidth, Math.max(75, getIconWidths())));
 
 //        for (ItemTab tab : Util.union(inputTabs, outputTabs))
 //        {
@@ -337,7 +352,7 @@ public class NodeElement extends GraphElement
                 break;
             }
         }
-        return new Point2D(getX() + itemTab.getX() + itemTab.getWidth() / 2, getY() + itemTab.getY());
+        return new Point2D(getX() + itemTab.getX() + itemTab.getWidth() / 2, getY() + itemTab.getHeight());
     }
 
     public Point2D getInputLineConnectionPoint(Item item)

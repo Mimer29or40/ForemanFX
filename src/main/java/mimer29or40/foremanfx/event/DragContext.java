@@ -2,9 +2,9 @@ package mimer29or40.foremanfx.event;
 
 public class DragContext
 {
-    double mouseAnchorX;
-    double mouseAnchorY;
+    public double mouseAnchorX;
+    public double mouseAnchorY;
 
-    double translateAnchorX;
-    double translateAnchorY;
+    public double translateAnchorX;
+    public double translateAnchorY;
 }

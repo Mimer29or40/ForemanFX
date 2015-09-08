@@ -27,7 +27,7 @@ public class AssemblerInfoElement extends GraphElement
 
     public AssemblerInfoElement(ProductionGraphViewer parent)
     {
-        this(null, 0, parent);
+        this(new MachinePermutation(DataCache.assemblers.get("assembling-machine-1"), DataCache.modules.get("none")), 0, parent);
     }
 
     public AssemblerInfoElement(MachinePermutation assembler, int number, ProductionGraphViewer parent)
@@ -36,8 +36,8 @@ public class AssemblerInfoElement extends GraphElement
         displayedMachine = assembler;
         displayedNumber = number;
 
-        width = 54;
-        height = 40;
+        width.set(54);
+        height.set(40);
 
         text = new Text();
         assemblerIcon = new ImageView();

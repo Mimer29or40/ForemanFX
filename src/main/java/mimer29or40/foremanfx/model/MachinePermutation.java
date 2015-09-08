@@ -1,5 +1,6 @@
 package mimer29or40.foremanfx.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MachinePermutation
@@ -19,10 +20,10 @@ public class MachinePermutation
         return 1 / timeDivisor * speed;
     }
 
-    public MachinePermutation(ProductionEntity entity, List<Module> modules)
+    public MachinePermutation(ProductionEntity entity, Module... modules)
     {
         this.entity = entity;
-        this.modules = modules;
+        this.modules = Arrays.asList(modules);
     }
 
     public String toString()

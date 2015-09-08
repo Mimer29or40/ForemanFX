@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import mimer29or40.foremanfx.gui.GuiFiles;
-import mimer29or40.foremanfx.util.Util;
+import mimer29or40.foremanfx.util.FileUtil;
 
 import java.io.File;
 
@@ -25,7 +25,7 @@ public class ForemanFX extends Application
 
         while (settings.getProp("factorioDir").isEmpty())
         {
-            File file = Util.directoryChooser("Select Factorio Directory");
+            File file = FileUtil.directoryChooser("Select Factorio Directory");
             if (file != null)
             { settings.setProp("factorioDir", file.getPath()); }
         }
@@ -40,7 +40,7 @@ public class ForemanFX extends Application
         DataCache.loadAllData(null);
 
 
-        this.mainStage = primaryStage;
+        mainStage = primaryStage;
 
         try
         {

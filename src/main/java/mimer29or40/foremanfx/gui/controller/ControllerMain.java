@@ -22,7 +22,7 @@ import mimer29or40.foremanfx.gui.graph.element.NodeElement;
 import mimer29or40.foremanfx.gui.node.ConsumerNode;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Language;
-import mimer29or40.foremanfx.util.Util;
+import mimer29or40.foremanfx.util.FileUtil;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -149,7 +149,7 @@ public class ControllerMain extends ControllerBase
 
         buttonFactorioDir.setOnAction(event ->
                                       {
-                                          File file = Util.directoryChooser("Select Factorio Directory");
+                                          File file = FileUtil.directoryChooser("Select Factorio Directory");
                                           if (file != null)
                                           { settings.setProp("factorioDir", file.getPath()); }
                                       });

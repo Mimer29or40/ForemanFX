@@ -2,10 +2,7 @@ package mimer29or40.foremanfx;
 
 import javafx.scene.image.Image;
 import mimer29or40.foremanfx.model.*;
-import mimer29or40.foremanfx.util.JsonHelper;
-import mimer29or40.foremanfx.util.Logger;
-import mimer29or40.foremanfx.util.LuaHelper;
-import mimer29or40.foremanfx.util.Util;
+import mimer29or40.foremanfx.util.*;
 import org.json.simple.JSONObject;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
@@ -106,7 +103,7 @@ public class DataCache
                     {
                         try
                         {
-                            String fileContents = Util.listToString(Util.readFile(dataFile));
+                            String fileContents = ListUtil.listToString(FileUtil.readFile(dataFile));
                             Matcher matcher = regex.matcher(fileContents);
 
                             while (matcher.find())
@@ -128,8 +125,8 @@ public class DataCache
 
         Logger.info("Extracting data....");
 
-        LuaTable dataTable = LuaHelper.getTable(globals, "data");
-        LuaTable rawTable = LuaHelper.getTable(dataTable, "raw");
+        LuaTable dataTable = LuaUtil.getTable(globals, "data");
+        LuaTable rawTable = LuaUtil.getTable(dataTable, "raw");
         debugLuaData(rawTable, "rawTable");
 
         Logger.info("Loading Items...");
@@ -141,66 +138,66 @@ public class DataCache
         Logger.info(items.size() + " Items Loaded");
 
         Logger.info("Loading Recipes...");
-        LuaTable recipeTable = LuaHelper.getTable(rawTable, "recipe");
-        if (!LuaHelper.isNull(recipeTable))
+        LuaTable recipeTable = LuaUtil.getTable(rawTable, "recipe");
+        if (!LuaUtil.isNull(recipeTable))
         {
             for (LuaValue key : recipeTable.keys())
             {
-                interpretLuaRecipe(key.toString(), LuaHelper.getTable(recipeTable, key));
+                interpretLuaRecipe(key.toString(), LuaUtil.getTable(recipeTable, key));
             }
         }
         Logger.info(recipes.size() + " Recipes Loaded");
 
         Logger.info("Loading Assembling Machines...");
-        LuaTable assemblerTable = LuaHelper.getTable(rawTable, "assembling-machine");
-        if (!LuaHelper.isNull(assemblerTable))
+        LuaTable assemblerTable = LuaUtil.getTable(rawTable, "assembling-machine");
+        if (!LuaUtil.isNull(assemblerTable))
         {
             for (LuaValue key : assemblerTable.keys())
             {
-                interpretAssemblingMachine(key.toString(), LuaHelper.getTable(assemblerTable, key));
+                interpretAssemblingMachine(key.toString(), LuaUtil.getTable(assemblerTable, key));
             }
         }
         Logger.info("Loading Furnaces...");
-        LuaTable furnaceTable = LuaHelper.getTable(rawTable, "furnace");
-        if (!LuaHelper.isNull(furnaceTable))
+        LuaTable furnaceTable = LuaUtil.getTable(rawTable, "furnace");
+        if (!LuaUtil.isNull(furnaceTable))
         {
             for (LuaValue key : furnaceTable.keys())
             {
-                interpretFurnaces(key.toString(), LuaHelper.getTable(furnaceTable, key));
+                interpretFurnaces(key.toString(), LuaUtil.getTable(furnaceTable, key));
             }
         }
         Logger.info(assemblers.size() + " Assembling Machines Loaded");
 
         Logger.info("Loading Miners...");
-        LuaTable minerTable = LuaHelper.getTable(rawTable, "mining-drill");
-        if (!LuaHelper.isNull(minerTable))
+        LuaTable minerTable = LuaUtil.getTable(rawTable, "mining-drill");
+        if (!LuaUtil.isNull(minerTable))
         {
             for (LuaValue key : minerTable.keys())
             {
-                interpretMiner(key.toString(), LuaHelper.getTable(minerTable, key));
+                interpretMiner(key.toString(), LuaUtil.getTable(minerTable, key));
             }
         }
         Logger.info(miners.size() + " Miners Loaded");
 
         Logger.info("Loading Resources...");
-        LuaTable resourceTable = LuaHelper.getTable(rawTable, "resource");
-        if (!LuaHelper.isNull(resourceTable))
+        LuaTable resourceTable = LuaUtil.getTable(rawTable, "resource");
+        if (!LuaUtil.isNull(resourceTable))
         {
             for (LuaValue key : resourceTable.keys())
             {
-                interpretResource(key.toString(), LuaHelper.getTable(resourceTable, key));
+                interpretResource(key.toString(), LuaUtil.getTable(resourceTable, key));
             }
         }
         Logger.info(resources.size() + " Resources Loaded");
 
         Logger.info("Loading Modules...");
-        LuaTable moduleTable = LuaHelper.getTable(rawTable, "module");
+        LuaTable moduleTable = LuaUtil.getTable(rawTable, "module");
         modules.put("none", new Module("None", 0));
-        if (!LuaHelper.isNull(moduleTable))
+        if (!LuaUtil.isNull(moduleTable))
         {
             for (LuaValue key : moduleTable.keys())
             {
-                interpretModule(key.toString(), LuaHelper.getTable(moduleTable, key));
+                interpretModule(key.toString(), LuaUtil.getTable(moduleTable, key));
             }
         }
         Logger.info(modules.size() + " Modules Loaded");
@@ -230,7 +227,7 @@ public class DataCache
             {
                 File info = new File(dir, "info.json");
 
-                JSONObject object = JsonHelper.parse(Util.readFile(info));
+                JSONObject object = JsonHelper.parse(FileUtil.readFile(info));
 
                 Language newLang = new Language(dir.getName(), (String) object.get("language-name"));
 
@@ -317,7 +314,7 @@ public class DataCache
         File modListFile = new File(modFile, "mod-list.json");
         if (modListFile.exists())
         {
-            List<String> json = Util.readFile(modListFile);
+            List<String> json = FileUtil.readFile(modListFile);
             JSONObject object = JsonHelper.parse(json);
             List<JSONObject> mods = (List<JSONObject>) object.get("mods");
             for (JSONObject obj : mods)
@@ -334,7 +331,7 @@ public class DataCache
                 mod.enabled = enabledMods.contains(mod.name);
             }
         }
-//        else
+//        else TODO read userData
 //        {
 //            Map<String, String> splitModStrings = new HashMap<>();
 //            foreach (String s in Properties.Settings.Default.EnabledMods)
@@ -369,7 +366,7 @@ public class DataCache
         File info = new File(dir, "info.json");
         if (!info.exists())
         { return; }
-        List<String> json = Util.readFile(info);
+        List<String> json = FileUtil.readFile(info);
         readModInfo(json, dir);
     }
 
@@ -451,11 +448,11 @@ public class DataCache
         {
             if (key.tojstring().equals(typeName))
             {
-                LuaTable itemTables = LuaHelper.getTable(rawTable, key);
+                LuaTable itemTables = LuaUtil.getTable(rawTable, key);
 
                 for (LuaValue key2 : itemTables.keys())
                 {
-                    LuaTable item = LuaHelper.getTable(itemTables, key2);
+                    LuaTable item = LuaUtil.getTable(itemTables, key2);
 
                     interpretLuaItem(key2.tojstring(), item);
                 }
@@ -548,7 +545,7 @@ public class DataCache
                 }
             }
 
-            if (!Util.isNullOrWhitespace(fullPath))
+            if (!StringUtil.isNullOrWhitespace(fullPath))
             {
                 for (int i = 1; i < splitPath.length; i++)
                 {
@@ -570,7 +567,7 @@ public class DataCache
 
     private static void interpretLuaItem(String name, LuaTable item)
     {
-        String iconString = LuaHelper.getString(item, "icon", true);
+        String iconString = LuaUtil.getString(item, "icon", true);
         Item newItem = new Item(name, loadImage(iconString));
 
         if (!items.containsKey(name))
@@ -595,15 +592,15 @@ public class DataCache
     {
         try
         {
-            float time = LuaHelper.getFloat(recipe, "energy_required", true, 0.5F);
+            float time = LuaUtil.getFloat(recipe, "energy_required", true, 0.5F);
             Map<Item, Float> ingredients = extractIngredientsFromLuaRecipe(recipe);
             Map<Item, Float> results = extractResultsFromLuaRecipe(recipe);
 
             Recipe newRecipe = new Recipe(name, time == 0.0F ? defaultRecipeTime : time, ingredients, results);
 
-            newRecipe.category = LuaHelper.getString(recipe, "category", true, "crafting");
+            newRecipe.category = LuaUtil.getString(recipe, "category", true, "crafting");
 
-            String iconFile = LuaHelper.getString(recipe, "icon", true);
+            String iconFile = LuaUtil.getString(recipe, "icon", true);
             if (iconFile != null)
             { newRecipe.setIcon(loadImage(iconFile)); }
             for (Item result : results.keySet())
@@ -624,28 +621,28 @@ public class DataCache
         {
             Assembler newAssembler = new Assembler(name);
 
-            newAssembler.icon = loadImage(LuaHelper.getString(assembler, "icon", true));
-            newAssembler.maxIngredients = LuaHelper.getInt(assembler, "ingredient_count");
-            newAssembler.moduleSlots = LuaHelper.getInt(assembler, "module_slots", true, 0);
+            newAssembler.icon = loadImage(LuaUtil.getString(assembler, "icon", true));
+            newAssembler.maxIngredients = LuaUtil.getInt(assembler, "ingredient_count");
+            newAssembler.moduleSlots = LuaUtil.getInt(assembler, "module_slots", true, 0);
             if (newAssembler.moduleSlots == 0)
             {
-                LuaTable moduleTable = LuaHelper.getTable(assembler, "module_specification", true);
-                if (!LuaHelper.isNull(moduleTable))
-                { newAssembler.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
+                LuaTable moduleTable = LuaUtil.getTable(assembler, "module_specification", true);
+                if (!LuaUtil.isNull(moduleTable))
+                { newAssembler.moduleSlots = LuaUtil.getInt(moduleTable, "module_slots", true, 0); }
             }
-            newAssembler.speed = LuaHelper.getFloat(assembler, "crafting_speed");
-            LuaTable effects = LuaHelper.getTable(assembler, "allowed_effects", true);
-            if (!LuaHelper.isNull(effects))
+            newAssembler.speed = LuaUtil.getFloat(assembler, "crafting_speed");
+            LuaTable effects = LuaUtil.getTable(assembler, "allowed_effects", true);
+            if (!LuaUtil.isNull(effects))
             {
                 for (LuaValue key : effects.keys())
                 {
-                    newAssembler.addAllowedEffects(LuaHelper.getString(effects, key));
+                    newAssembler.addAllowedEffects(LuaUtil.getString(effects, key));
                 }
             }
-            LuaTable categories = LuaHelper.getTable(assembler, "crafting_categories", true);
+            LuaTable categories = LuaUtil.getTable(assembler, "crafting_categories", true);
             for (LuaValue key : categories.keys())
             {
-                newAssembler.addCategories(LuaHelper.getString(categories, key));
+                newAssembler.addCategories(LuaUtil.getString(categories, key));
             }
 //            for (String s : enabledAssemblers) TODO find settings
 //            {
@@ -670,20 +667,20 @@ public class DataCache
         {
             Assembler newFurnace = new Assembler(name);
 
-            newFurnace.icon = loadImage(LuaHelper.getString(furnace, "icon", true));
+            newFurnace.icon = loadImage(LuaUtil.getString(furnace, "icon", true));
             newFurnace.maxIngredients = 1;
-            newFurnace.moduleSlots = LuaHelper.getInt(furnace, "module_slots", true, 0);
+            newFurnace.moduleSlots = LuaUtil.getInt(furnace, "module_slots", true, 0);
             if (newFurnace.moduleSlots == 0)
             {
-                LuaTable moduleTable = LuaHelper.getTable(furnace, "module_specification", true);
-                if (!LuaHelper.isNull(moduleTable))
-                { newFurnace.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
+                LuaTable moduleTable = LuaUtil.getTable(furnace, "module_specification", true);
+                if (!LuaUtil.isNull(moduleTable))
+                { newFurnace.moduleSlots = LuaUtil.getInt(moduleTable, "module_slots", true, 0); }
             }
-            newFurnace.speed = LuaHelper.getFloat(furnace, "crafting_speed");
-            LuaTable categories = LuaHelper.getTable(furnace, "crafting_categories", true);
+            newFurnace.speed = LuaUtil.getFloat(furnace, "crafting_speed");
+            LuaTable categories = LuaUtil.getTable(furnace, "crafting_categories", true);
             for (LuaValue key : categories.keys())
             {
-                newFurnace.addCategories(LuaHelper.getString(categories, key));
+                newFurnace.addCategories(LuaUtil.getString(categories, key));
             }
 //            for (String s : enabledAssemblers) TODO find settings
 //            {
@@ -707,20 +704,20 @@ public class DataCache
         try
         {
             Miner newMiner = new Miner(name);
-            newMiner.icon = loadImage(LuaHelper.getString(miner, "icon", true));
-            newMiner.miningPower = LuaHelper.getFloat(miner, "mining_power");
-            newMiner.speed = LuaHelper.getFloat(miner, "mining_speed");
-            newMiner.moduleSlots = LuaHelper.getInt(miner, "module_slots", true, 0);
+            newMiner.icon = loadImage(LuaUtil.getString(miner, "icon", true));
+            newMiner.miningPower = LuaUtil.getFloat(miner, "mining_power");
+            newMiner.speed = LuaUtil.getFloat(miner, "mining_speed");
+            newMiner.moduleSlots = LuaUtil.getInt(miner, "module_slots", true, 0);
             if (newMiner.moduleSlots == 0)
             {
-                LuaTable moduleTable = LuaHelper.getTable(miner, "module_specification", true);
-                if (!LuaHelper.isNull(moduleTable))
-                { newMiner.moduleSlots = LuaHelper.getInt(moduleTable, "module_slots", true, 0); }
+                LuaTable moduleTable = LuaUtil.getTable(miner, "module_specification", true);
+                if (!LuaUtil.isNull(moduleTable))
+                { newMiner.moduleSlots = LuaUtil.getInt(moduleTable, "module_slots", true, 0); }
             }
-            LuaTable categories = LuaHelper.getTable(miner, "crafting_categories", true);
+            LuaTable categories = LuaUtil.getTable(miner, "crafting_categories", true);
             for (LuaValue key : categories.keys())
             {
-                newMiner.resourceCategories.add(LuaHelper.getString(categories, key));
+                newMiner.resourceCategories.add(LuaUtil.getString(categories, key));
             }
 //            for (String s : enabledAssemblers) TODO find settings
 //            {
@@ -743,26 +740,26 @@ public class DataCache
     {
         try
         {
-            LuaTable minableTable = LuaHelper.getTable(resource, "minable");
-            if (LuaHelper.isNull(minableTable))
+            LuaTable minableTable = LuaUtil.getTable(resource, "minable");
+            if (LuaUtil.isNull(minableTable))
             {
                 return; // Cant obtain resource
             }
             Resource newResource = new Resource(name);
-            newResource.category = LuaHelper.getString(resource, "category", true, "basic-solid");
-            newResource.hardness = LuaHelper.getFloat(minableTable, "hardness");
-            newResource.time = LuaHelper.getFloat(minableTable, "mining_time");
+            newResource.category = LuaUtil.getString(resource, "category", true, "basic-solid");
+            newResource.hardness = LuaUtil.getFloat(minableTable, "hardness");
+            newResource.time = LuaUtil.getFloat(minableTable, "mining_time");
 
-            if (!LuaHelper.isNull(minableTable, "result"))
+            if (!LuaUtil.isNull(minableTable, "result"))
             {
-                newResource.result = LuaHelper.getString(minableTable, "result");
+                newResource.result = LuaUtil.getString(minableTable, "result");
             }
             else
             {
                 try
                 {
-                    LuaTable resultsTable = LuaHelper.getTable(minableTable, "results");
-                    newResource.result = LuaHelper.getString((LuaTable) resultsTable.get(1), "name");
+                    LuaTable resultsTable = LuaUtil.getTable(minableTable, "results");
+                    newResource.result = LuaUtil.getString((LuaTable) resultsTable.get(1), "name");
                 }
                 catch (Exception e)
                 {
@@ -785,13 +782,13 @@ public class DataCache
         {
             float speedBonus = 0F;
 
-            LuaTable effectTable = LuaHelper.getTable(module, "effect");
-            LuaTable speedTable = LuaHelper.getTable(effectTable, "speed", true);
-            if (!LuaHelper.isNull(speedTable))
+            LuaTable effectTable = LuaUtil.getTable(module, "effect");
+            LuaTable speedTable = LuaUtil.getTable(effectTable, "speed", true);
+            if (!LuaUtil.isNull(speedTable))
             {
-                speedBonus = LuaHelper.getFloat(speedTable, "bonus", true, -1F);
+                speedBonus = LuaUtil.getFloat(speedTable, "bonus", true, -1F);
             }
-            if (LuaHelper.isNull(speedTable) || speedBonus <= 0)
+            if (LuaUtil.isNull(speedTable) || speedBonus <= 0)
             { return; }
 
             Module newModule = new Module(name, speedBonus);
@@ -816,27 +813,27 @@ public class DataCache
     private static Map<Item, Float> extractResultsFromLuaRecipe(LuaTable recipe)
     {
         Map<Item, Float> results = new HashMap<>();
-        if (!LuaHelper.isNull(recipe, "result"))
+        if (!LuaUtil.isNull(recipe, "result"))
         {
-            String resultName = LuaHelper.getString(recipe, "result", false);
-            float resultCount = LuaHelper.getFloat(recipe, "result_count", true);
+            String resultName = LuaUtil.getString(recipe, "result", false);
+            float resultCount = LuaUtil.getFloat(recipe, "result_count", true);
             if (resultCount == 0F)
             { resultCount = 1F; }
             results.put(findOrCreateUnknownItem(resultName), resultCount);
 
         }
-        else if (!LuaHelper.isNull(recipe, "results"))
+        else if (!LuaUtil.isNull(recipe, "results"))
         {
             LuaTable resultsTable = (LuaTable) recipe.get(LuaValue.valueOf("results"));
             for (LuaValue key : resultsTable.keys())
             {
-                LuaTable result = LuaHelper.getTable(resultsTable, key);
-                Item newResult = !LuaHelper.isNull(result, "name") ?
-                                 findOrCreateUnknownItem(LuaHelper.getString(result, "name")) :
-                                 findOrCreateUnknownItem(LuaHelper.getString(result, 1));
-                float amount = !LuaHelper.isNull(result, "amount") ?
-                               LuaHelper.getFloat(result, "amount") :
-                               LuaHelper.getFloat(result, 2);
+                LuaTable result = LuaUtil.getTable(resultsTable, key);
+                Item newResult = !LuaUtil.isNull(result, "name") ?
+                                 findOrCreateUnknownItem(LuaUtil.getString(result, "name")) :
+                                 findOrCreateUnknownItem(LuaUtil.getString(result, 1));
+                float amount = !LuaUtil.isNull(result, "amount") ?
+                               LuaUtil.getFloat(result, "amount") :
+                               LuaUtil.getFloat(result, 2);
                 if (results.containsKey(newResult))
                 { results.put(newResult, results.get(newResult) + amount); }
                 else
@@ -849,16 +846,16 @@ public class DataCache
     private static Map<Item, Float> extractIngredientsFromLuaRecipe(LuaTable recipe)
     {
         Map<Item, Float> ingredients = new HashMap<>();
-        LuaTable ingredientsTable = LuaHelper.getTable(recipe, "ingredients");
+        LuaTable ingredientsTable = LuaUtil.getTable(recipe, "ingredients");
         for (LuaValue key : ingredientsTable.keys())
         {
-            LuaTable ingredientTable = LuaHelper.getTable(ingredientsTable, key);
+            LuaTable ingredientTable = LuaUtil.getTable(ingredientsTable, key);
 
-            String name = !LuaHelper.isNull(ingredientTable, "name") ?
-                          LuaHelper.getString(ingredientTable, "name") :
+            String name = !LuaUtil.isNull(ingredientTable, "name") ?
+                          LuaUtil.getString(ingredientTable, "name") :
                           ingredientTable.get(1).checkjstring();
-            float amount = !LuaHelper.isNull(ingredientTable, "amount") ?
-                           LuaHelper.getValue(ingredientTable, "amount").tofloat() :
+            float amount = !LuaUtil.isNull(ingredientTable, "amount") ?
+                           LuaUtil.getValue(ingredientTable, "amount").tofloat() :
                            ingredientTable.get(2).tofloat();
 
             Item ingredient = findOrCreateUnknownItem(name);
@@ -897,7 +894,7 @@ public class DataCache
         for (LuaValue key : table.keys())
         {
             LuaValue value = table.get(key);
-            if (LuaHelper.getType(value).equals("table"))
+            if (LuaUtil.getType(value).equals("table"))
             {
                 writeLines((LuaTable) value, writer, prefix + " " + key.checkjstring());
             }

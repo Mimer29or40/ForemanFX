@@ -25,6 +25,6 @@ public class JsonHelper
 
     public static JSONObject parse(List<String> json)
     {
-        return parse(Util.listToString(json));
+        return parse(ListUtil.listToString(json));
     }
 }

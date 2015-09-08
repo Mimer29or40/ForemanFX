@@ -2,7 +2,7 @@ package mimer29or40.foremanfx.gui.node;
 
 import mimer29or40.foremanfx.gui.graph.ProductionGraph;
 import mimer29or40.foremanfx.model.Item;
-import mimer29or40.foremanfx.util.Util;
+import mimer29or40.foremanfx.util.ListUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -125,10 +125,7 @@ public abstract class ProductionNode implements Serializable
 
     public void destroy()
     {
-        for (NodeLink link : Util.union(inputLinks, outputLinks))
-        {
-            link.destroy();
-        }
+        ListUtil.union(inputLinks, outputLinks).forEach(NodeLink::destroy);
         graph.nodes.remove(this);
         graph.invalidateCaches();
     }

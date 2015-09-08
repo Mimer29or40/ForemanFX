@@ -5,7 +5,7 @@ import javafx.scene.canvas.Canvas;
 import mimer29or40.foremanfx.gui.node.*;
 import mimer29or40.foremanfx.model.Item;
 import mimer29or40.foremanfx.model.Recipe;
-import mimer29or40.foremanfx.util.Util;
+import mimer29or40.foremanfx.util.ListUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -298,15 +298,12 @@ public class ProductionGraph extends Canvas
                                                                                         {
                                                                                             for (ProductionNode node : strongComponent)
                                                                                             {
-                                                                                                for (NodeLink link : Util
-                                                                                                        .union(node.getInputLinks(),
-                                                                                                               node.getOutputLinks()))
-                                                                                                {
-                                                                                                    link.destroy();
-                                                                                                }
+                                                                                                List<NodeLink> union = ListUtil.union(
+                                                                                                        node.getInputLinks(), node.getOutputLinks());
+
+                                                                                                union.forEach(NodeLink::destroy);
                                                                                                 cyclicRecipes.add(
-                                                                                                        ((RecipeNode) node)
-                                                                                                                .getBaseRecipe());
+                                                                                                        ((RecipeNode) node).getBaseRecipe());
                                                                                                 nodes.remove(node);
                                                                                             }
                                                                                         });
@@ -331,7 +328,7 @@ public class ProductionGraph extends Canvas
         public ProductionNode sourceNode;
         public int                 index   = -1;
         public int                 lowLink = -1;
-        public HashSet<TarzanNode> links   = new HashSet<TarzanNode>(); //Links to other nodes
+        public HashSet<TarzanNode> links = new HashSet<>(); //Links to other nodes
 
         public TarzanNode(ProductionNode sourceNode)
         {
